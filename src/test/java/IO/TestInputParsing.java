@@ -10,7 +10,7 @@ public class TestInputParsing {
 
     @Test
     void testBasicArgs() {
-        String[] args = { "testBasicArgs.dot", "3" };
+        String[] args = { "testBasicArgs.dot" };
 
         InputCommand actual = CLIParser.commandLineParser(args);
 
@@ -22,7 +22,7 @@ public class TestInputParsing {
 
     @Test
     void testDefaultOutputFile() {
-        String[] args = { "testDefaultOutputFile.dot", "5" };
+        String[] args = { "testDefaultOutputFile.dot" };
 
         InputCommand actual = CLIParser.commandLineParser(args);
 
