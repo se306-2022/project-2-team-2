@@ -28,6 +28,7 @@ public class TestInputParsing {
 
         assertEquals("testDefaultOutputFile-output.dot",
                 actual.getOutputFile());
-    }
+        System.out.print(actual.getOutputFile());
 
+    }
 }

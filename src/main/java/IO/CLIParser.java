@@ -9,6 +9,7 @@ import org.apache.commons.cli.ParseException;
 public class CLIParser {
     private static Options options = new Options();
 
+
     // This can be implemented later
     private static void init() {
         options.addOption(
@@ -16,7 +17,6 @@ public class CLIParser {
                         .hasArg(true).argName("Output file name")
                         .desc("Specify the file name of the output of the program")
                         .build());
-
     }
 
     public static InputCommand commandLineParser(String[] args) {
@@ -44,7 +44,6 @@ public class CLIParser {
         } catch (ParseException e) {
             /* Add an Error option later in the future. */
         }
-
         return commandLineOptions;
     }
 
