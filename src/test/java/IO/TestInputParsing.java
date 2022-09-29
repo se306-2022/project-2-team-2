@@ -19,4 +19,15 @@ public class TestInputParsing {
                 () -> assertEquals("testBasicArgs.dot", actual.getInputFile())
         );
     }
+
+    @Test
+    void testDefaultOutputFile() {
+        String[] args = { "testDefaultOutputFile.dot", "5" };
+
+        InputCommand actual = CLIParser.commandLineParser(args);
+
+        assertEquals("testDefaultOutputFile-output.dot",
+                actual.getOutputFile());
+    }
+
 }

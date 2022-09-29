@@ -21,6 +21,13 @@ public class InputCommand {
         this.inputFile = inputFile;
     }
 
+    public String getOutputFile() {
+        //If no output file is specified, use an output file name of {input}-output.dot
+        if (this.outputFile == null) {
+            this.outputFile = inputFile.replace(".dot", "") + "-output.dot";
+        }
+        return this.outputFile;
+    }
     public void setOutputFile(String outputFile) {
         if (!outputFile.endsWith(".dot")) {
             outputFile += ".dot";
