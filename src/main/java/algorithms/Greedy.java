@@ -1,59 +1,20 @@
-package solution;
+package algorithms;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import models.ResultTask;
 
 public class Greedy {
-    public Node GreedySchedule(Graph graph, int processors) {
-        PriorityQueue<Node> open = new PriorityQueue<>();
-        PriorityQueue<Node> closed = new PriorityQueue<>();
-        Queue<String> queue = new LinkedList<>();
-        // find start node(s) (node with no in degree) and add to queue
-        for (int i = 0; i < graph.getNodeCount(); i++) {
-            Node node = graph.getNode(i);
-            if (node.getInDegree() == 0) {
-                queue.add(node.getId());
-            }
-        }
-
-        //find target node (node with no out edges )
-
-        while (!open.isEmpty()) {
-            Node currentNode = open.peek();
-//            if (currentNode.equals(target)) return currentNode;
-
-//            for (Node node : new Iterable<Node>() {
-//                @Override
-//                public Iterator<Edge> iterator() {
-//                    return currentNode.leavingEdges().iterator();
-//                }
-//            }) {
-//                Edge currEdge = node.getEdgeBetween(currentNode);
-//                double totalWeight = Double.parseDouble(node.getAttribute("weight").toString())
-//                                + Double.parseDouble(currEdge.getAttribute("weight").toString());
-//                if (!open.contains(node) && !closed.contains(node)) {
-//
-//                } else {
-//
-//                }
-//            }
-
-        }
-
-        return null;
-    }
-
-    public Task[] GreedyScheduler(Graph graph, int processors) {
+    public ResultTask[] GreedyScheduler(Graph graph, int processors) {
         int count = graph.getNodeCount();
         int finishTime = 0;
         int limit = 0;
 
         Queue<String> queue = new LinkedList();
         //index = node index in graph, array stores processor it is scheduled on, start and finish time (in that order)
-        Task[] result = new Task[count];
+        ResultTask[] result = new ResultTask[count];
         HashMap<String, Integer> parents = new HashMap<>();
 
         //intialise parents maps
@@ -70,8 +31,6 @@ public class Greedy {
             int[] value = new int[processors];
             minStartTimesOnProcessors.put(graph.getNode(i).getId(), value);
         }
-
-        Node[] output = new Node[count];
 
         // find all nodes with in degree of 0
         for (int i = 0; i < count; i++) {
@@ -102,7 +61,7 @@ public class Greedy {
 
             //add current node to results map
             int pos = graph.getNode(current).getIndex();
-            result[pos] = new Task(node, minStart, finishTime, currProcessor);
+            result[pos] = new ResultTask(node, minStart, finishTime, currProcessor);
 
             // get children of current node and iterate through
             for (Edge edge : new Iterable<Edge>() {
@@ -145,15 +104,5 @@ public class Greedy {
 
         return result;
 
-    }
-
-    private double calculateLoadBalancingBound(Node node) {
-
-
-        return -1;
-    }
-
-    private double calculateBottomLevelBound(Graph graph, Node node) {
-        return -1;
     }
 }

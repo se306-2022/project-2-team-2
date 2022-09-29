@@ -1,14 +1,14 @@
-package solution;
+package models;
 
 import org.graphstream.graph.Node;
 
-public class Task {
+public class ResultTask {
     Node node;
     int startTime;
     int finishTime;
     int processor;
 
-    public Task(Node node, int startTime, int finishTime, int processor) {
+    public ResultTask(Node node, int startTime, int finishTime, int processor) {
         this.node = node;
         this.startTime = startTime;
         this.finishTime = finishTime;
