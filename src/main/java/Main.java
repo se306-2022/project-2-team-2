@@ -1,5 +1,10 @@
+import IO.CLIParser;
+import IO.InputCommand;
+
 public class Main {
+
+    private static InputCommand commands;
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        commands = CLIParser.commandLineParser(args);;
     }
 }
