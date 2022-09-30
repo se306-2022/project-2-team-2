@@ -37,9 +37,9 @@ public class CLIParser {
         return inputCommand;
     }
 
-    private static int parseNumProcessors(String[] commands) {
+    private static int parseNumProcessors(String[] args) {
         try {
-            return Integer.parseInt(commands[1]);
+            return Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
             System.err.println("Error parsing number of processors.");
             System.exit(1);

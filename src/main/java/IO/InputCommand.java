@@ -11,7 +11,7 @@ public class InputCommand {
     public InputCommand() {
     }
 
-    public InputCommand(String inputFile) {
+    public InputCommand(String inputFile, int numProcessors) {
         this.inputFile = inputFile;
         this.numProcessors = numProcessors;
     }
