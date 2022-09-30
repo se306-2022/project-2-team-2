@@ -56,7 +56,8 @@ public class Greedy {
                 }
             }
 
-            int currFinishTime = minStart + Integer.parseInt(graph.getNode(current).getAttribute("cost").toString());
+            Double nodeCost = (Double) graph.getNode(current).getAttribute("Weight");
+            int currFinishTime = minStart + nodeCost.intValue();
             finishTime = Math.max(finishTime, currFinishTime); //get the later finish time
 
             //add current node to results map
@@ -81,7 +82,7 @@ public class Greedy {
                                 Math.max(finishTime, minStartTimesOnProcessors.get(childId)[currProcessor]);
                     } else {
                         minStartTimesOnProcessors.get(childId)[i] = Math.max(
-                                finishTime + Integer.parseInt(edge.getAttribute("communicationCost").toString()),
+                                finishTime + Integer.parseInt(edge.getAttribute("Weight").toString()),
                                 minStartTimesOnProcessors.get(childId)[i]);
                     }
                 }
