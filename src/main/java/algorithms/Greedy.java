@@ -81,8 +81,9 @@ public class Greedy {
                         minStartTimesOnProcessors.get(childId)[currProcessor] =
                                 Math.max(finishTime, minStartTimesOnProcessors.get(childId)[currProcessor]);
                     } else {
+                        Double communicationCost = (Double) edge.getAttribute("Weight");
                         minStartTimesOnProcessors.get(childId)[i] = Math.max(
-                                finishTime + Integer.parseInt(edge.getAttribute("Weight").toString()),
+                                finishTime + communicationCost.intValue(),
                                 minStartTimesOnProcessors.get(childId)[i]);
                     }
                 }
