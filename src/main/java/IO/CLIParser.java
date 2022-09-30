@@ -9,8 +9,6 @@ import org.apache.commons.cli.ParseException;
 public class CLIParser {
     private static Options options = new Options();
 
-
-    // This can be implemented later
     private static void init() {
         options.addOption(
                 Option.builder("o").required(false)
@@ -27,6 +25,8 @@ public class CLIParser {
         CommandLine commandLineOption = parseOptions(args);
         inputCommand.setInputFile(inputFile);
 
+        inputCommand.setNumProcessors(parseNumProcessors(args));
+
         if (commandLineOption.hasOption('o')) {
             String outputFile = getOptionValueString(commandLineOption, 'o');
             inputCommand.setOutputFile(outputFile);
@@ -35,6 +35,17 @@ public class CLIParser {
         }
 
         return inputCommand;
+    }
+
+    private static int parseNumProcessors(String[] commands) {
+        try {
+            return Integer.parseInt(commands[1]);
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing number of processors.");
+            System.exit(1);
+        }
+
+        return -1;
     }
 
     private static CommandLine parseOptions(String[] args) {

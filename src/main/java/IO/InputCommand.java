@@ -4,6 +4,8 @@ public class InputCommand {
     private String inputFile;
     private String outputFile;
 
+    private int numProcessors;
+
     private boolean customOutputFile = false;
 
     public InputCommand() {
@@ -11,7 +13,14 @@ public class InputCommand {
 
     public InputCommand(String inputFile) {
         this.inputFile = inputFile;
+        this.numProcessors = numProcessors;
     }
+
+    public void setNumProcessors(int numProcessors) {
+        this.numProcessors = numProcessors;
+    }
+
+    public int getNumProcessors() { return this.numProcessors; }
 
     public String getInputFile() {
         return this.inputFile;
