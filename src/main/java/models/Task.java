@@ -1,36 +1,33 @@
 package models;
 
-import java.util.List;
+import org.graphstream.graph.Node;
 
 public class Task {
+    private Node node;
+    private int startTime;
+    private int finishTime;
+    private int processor;
 
-    public int id;
-    private List<Edge> inEdges;
-    private List<Edge> outEdges;
-    private int weight;
-    private int bottomLevel;
-
-    public Task (int id, List<Edge> inEdges, List<Edge> outEdges, int weight, int bottomLevel) {
-        this.id = id;
-        this.inEdges = inEdges;
-        this.outEdges = outEdges;
-        this.weight = weight;
-        this.bottomLevel = bottomLevel;
+    public Task(Node node, int startTime, int finishTime, int processor) {
+        this.node = node;
+        this.startTime = startTime;
+        this.finishTime = finishTime;
+        this.processor = processor;
     }
 
-    public void setBottomLevelComputation(int bottomLevelComputation) {
-        this.bottomLevel = bottomLevelComputation;
+    public int getFinishTime() {
+        return finishTime;
     }
 
-    public List<Edge> getInEdges() {
-        return inEdges;
+    public int getStartTime() {
+        return startTime;
     }
 
-    public List<Edge> getOutEdges() {
-        return outEdges;
+    public Node getNode() {
+        return node;
     }
 
-    public int getWeight() {
-        return weight;
+    public int getProcessor() {
+        return processor;
     }
 }
