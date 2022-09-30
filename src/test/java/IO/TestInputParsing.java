@@ -1,9 +1,8 @@
 package IO;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 
 public class TestInputParsing {
@@ -14,10 +13,7 @@ public class TestInputParsing {
 
         InputCommand actual = CLIParser.commandLineParser(args);
 
-        assertAll(
-                "Tests that the input file name and number of processors are correct",
-                () -> assertEquals("testBasicArgs.dot", actual.getInputFile())
-        );
+        assertEquals("testBasicArgs.dot", actual.getInputFile());
     }
 
     @Test
