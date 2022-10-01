@@ -5,13 +5,21 @@ import org.apache.commons.cli.*;
 public class CLIParser {
     private static Options options = new Options();
 
+    private static String header;
 
+    private static String footer;
     private static void init() {
-        options.addOption(
-                Option.builder("o").required(false)
-                        .hasArg(true).argName("Output file name")
-                        .desc("Specify the file name of the output of the program")
-                        .build());
+//        options.addOption(
+//                Option.builder("o").required(false)
+//                        .hasArg(true).argName("Output file name")
+//                        .desc("Specify the file name of the output of the program")
+//                        .build());
+
+        header =
+                "This program takes a .dot file as input, containing task information, "
+                        + "and produces the optimal schedule for these tasks on a specified number of processors.";
+
+        footer = "If there are any problems contact project-2-team-2.";
     }
 
     public static InputCommand commandLineParser(String[] args) {
@@ -66,7 +74,13 @@ public class CLIParser {
     private static void error(String[] messages) {
         for (String msg : messages) {
             System.err.println(msg);
+            help();
         }
         System.exit(1);
+    }
+
+    private static void help() {
+        HelpFormatter helpFormatter = new HelpFormatter();
+        helpFormatter.printHelp("scheduler [INPUT-FILE] [NUM_PROCESSORS]", header, options, footer);
     }
 }
