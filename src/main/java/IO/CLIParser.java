@@ -1,13 +1,10 @@
 package IO;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
 public class CLIParser {
     private static Options options = new Options();
+
 
     private static void init() {
         options.addOption(
@@ -19,6 +16,10 @@ public class CLIParser {
 
     public static InputCommand commandLineParser(String[] args) {
         init();
+
+        if (args.length < 2) {
+            error(new String[] { "Missing input arguments" });
+        }
 
         InputCommand inputCommand = new InputCommand();
         String inputFile = args[0];
@@ -60,5 +61,12 @@ public class CLIParser {
 
     private static String getOptionValueString(CommandLine commandLine, char option) {
         return commandLine.getOptionValue(option);
+    }
+
+    private static void error(String[] messages) {
+        for (String msg : messages) {
+            System.err.println(msg);
+        }
+        System.exit(1);
     }
 }
