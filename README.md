@@ -6,7 +6,7 @@ Push a .dot file to the root directory of the project and run the command below.
 ```
 java -jar scheduler.jar <input_file.dot> <num_processors>
 ```
-- `<input_graphvis.dot>`: an input dot file containing the graph description.
+- `<input_file.dot>`: an input dot file containing the graph description.
 - `<processors>`: an integer number of processors the schedule will be performed on.
 
 ## Acknowledgements
