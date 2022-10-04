@@ -49,10 +49,10 @@ public class BranchAndBound {
             return bLevels[node];
         }
 
-        // If there are no child nodes, we are at an exit task and bLevel is it's own weight.
+        // If there are no child nodes, we are at an exit task and bLevel is its own weight.
         List<Edge> outEdges = graph.getNode(node).leavingEdges().collect(Collectors.toList());
         if (outEdges.isEmpty()) {
-            bLevels[node] = (Integer) graph.getNode(node).getAttribute("Weight");
+            bLevels[node] = graph.getNode(node).getAttribute("Weight", Double.class).intValue();
             return bLevels[node];
         }
 
@@ -63,11 +63,11 @@ public class BranchAndBound {
             maxLength = Math.max(maxLength, childNodeBLevel);
         }
 
-        bLevels[node] = maxLength + (Integer) graph.getNode(node).getAttribute("Weight");
+        bLevels[node] = maxLength + graph.getNode(node).getAttribute("Weight", Double.class).intValue();
         return bLevels[node];
     }
 
-    public void dfs(State state) {
+    public void recurse(State state) {
         if (state.getFreeNodes().isEmpty()) {
             this.bestSchedule = state; // Need to deep copy
             // Note: state, processor, task model might make this painful.
@@ -99,7 +99,7 @@ public class BranchAndBound {
                     // Add child nodes to freeTasks.
                 }
 
-                dfs(state);
+                recurse(state);
 
                 processor.removeTask(task);
                 for (Edge edge : outEdges) {
@@ -109,6 +109,10 @@ public class BranchAndBound {
             }
             state.getFreeNodes().add(node);
         }
+    }
+
+    public int[] getbLevels() {
+        return bLevels;
     }
 
 
