@@ -13,29 +13,64 @@ import java.util.stream.Collectors;
 public class BranchAndBound {
 
     private State bestSchedule;
-    public BranchAndBound() {}
 
-    public State greedy(Graph graph, int numProcessors) {
+    private Graph graph;
+
+    private int numProcessors;
+
+    private int[] bLevels;
+
+    public BranchAndBound(Graph graph, int numProcessors) {
+        this.numProcessors = numProcessors;
+        this.graph = graph;
+        this.bLevels = getBLevels(graph);
+    }
+
+    /**
+     * Returns array of bLevels indexed by node.
+     * bLevels are calculated by summing computation costs to exit node and taking the maximum.
+     *
+     * @param graph GraphStream graph object.
+     * @return int[] array of bLevels index by node.
+     */
+    public int[] getBLevels(Graph graph) {
         int numTasks = graph.getNodeCount();
+        int[] bLevels = new int[numTasks];
 
-        Queue<Node> initialFreeNodes = new LinkedList<>();
-        for (int i = 0; i < numTasks; i++) {
-            Node node = graph.getNode(i);
-            if (node.getInDegree() == 0) {
-                initialFreeNodes.add(node);
-            }
+        for (int node = 0; node < numTasks; node++) {
+            calculateBLevelsDFS(graph, bLevels, node);
         }
 
-        State initialState = new State(initialFreeNodes, numProcessors);
+        return bLevels;
+    }
 
-        dfs(initialState);
+    public int calculateBLevelsDFS(Graph graph, int[] bLevels, int node) {
+        if (bLevels[node] != 0) {
+            return bLevels[node];
+        }
 
-        return bestSchedule;
+        // If there are no child nodes, we are at an exit task and bLevel is it's own weight.
+        List<Edge> outEdges = graph.getNode(node).leavingEdges().collect(Collectors.toList());
+        if (outEdges.isEmpty()) {
+            bLevels[node] = (Integer) graph.getNode(node).getAttribute("Weight");
+            return bLevels[node];
+        }
+
+        int maxLength = 0;
+        for (Edge edge : outEdges) {
+            Node childNode = edge.getNode1();
+            int childNodeBLevel = calculateBLevelsDFS(graph, bLevels, childNode.getIndex());
+            maxLength = Math.max(maxLength, childNodeBLevel);
+        }
+
+        bLevels[node] = maxLength + (Integer) graph.getNode(node).getAttribute("Weight");
+        return bLevels[node];
     }
 
     public void dfs(State state) {
         if (state.getFreeNodes().isEmpty()) {
-            this.bestSchedule = state;
+            this.bestSchedule = state; // Need to deep copy
+            // Note: state, processor, task model might make this painful.
             return;
         }
 
@@ -43,6 +78,8 @@ public class BranchAndBound {
             state.getFreeNodes().remove(node);
             for (Processor processor : state.getProcessors()) {
 
+                // Might be redundant if we just want earliest possible processor time.
+                // Free task queue contains only tasks we can possibily schedule.
                 List<Edge> inEdges = node.enteringEdges().collect(Collectors.toList());
                 for (Edge edge : inEdges) {
                     Node parentNode = edge.getNode0();
