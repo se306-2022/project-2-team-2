@@ -1,4 +1,4 @@
-package com.example.visualization;
+package visualisation;
 
 public class VisualizationController {
 
