@@ -6,7 +6,6 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-
 import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,9 +13,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import com.sun.management.OperatingSystemMXBean;
+import javafx.scene.control.Label;
 
 public class VisualizationController {
+    private static UITimer timer;
 
+    @FXML
+    private Label timerLabel;
     @FXML
     private LineChart ramChart;
     @FXML
@@ -24,11 +27,65 @@ public class VisualizationController {
     private ScheduledExecutorService scheduledExecutorService;
     final int WINDOW_SIZE = 10;
 
+    /**
+     *  Initialises components of the JavaFX window for visualisation
+     */
+    @FXML
     public void initialize() {
+        timer = new UITimer();
+        timer.setController(this);
         initRAMChart();
         initCPUChart();
     }
 
+    /**
+     * Called by {@link UITimer} startUITimer() to update timer label
+     * @param counter incremented value
+     */
+    @FXML
+    public synchronized void setUITimer(int counter) {
+        Platform.runLater(() -> {
+            String minEmpty = "";
+            String secEmpty = "";
+            String msecEmpty = "";
+            // Split counter into relevant parts of timer format
+            long minutes = counter / 6000;
+            long seconds = (counter - minutes * 6000) / 100;
+            long milliseconds = counter - minutes * 6000 - seconds * 100;
+
+            // 0 to be appended to the front if the value is less than 10
+            if (minutes < 10) {
+                minEmpty = "0";
+            }
+            if (seconds < 10) {
+                secEmpty = "0";
+            }
+            if (milliseconds < 10) {
+                msecEmpty = "0";
+            }
+
+            String timerText = "00:" + minEmpty + minutes + ":" + secEmpty + seconds + "." + msecEmpty + milliseconds;
+            timerLabel.setText(timerText);
+        });
+    }
+
+    /**
+     * Handles start action when the start button is pressed
+     */
+    public void startAction() {
+        timer.startUITimer();
+    }
+
+    /**
+     * Handles stop action when the stop button is pressed
+     */
+    public void stopAction() {
+        timer.stopUITimer();
+    }
+
+    /**
+     * Sets up chart displaying realtime RAM usage
+     */
     public void initRAMChart() {
 
         // TODO: Needs cleaning anf refactoring. A lot of duplicate code between initRAMChart() and initCPUChart().
@@ -76,6 +133,9 @@ public class VisualizationController {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * Sets up chart displaying realtime CPU usage
+     */
     public void initCPUChart() {
 
         // TODO: Needs cleaning and refactoring. A lot of duplicate code between initRAMChart() and initCPUChart().
