@@ -34,8 +34,6 @@ public class VisualizationController {
     public void initialize() {
         timer = new UITimer();
         timer.setController(this);
-        initRAMChart();
-        initCPUChart();
     }
 
     /**

@@ -28,6 +28,8 @@ public class UITimer extends Thread {
                 }
             }
         };
+        _controller.initCPUChart();
+        _controller.initRAMChart();
         timer = new Timer("timer");
         timer.scheduleAtFixedRate(timerTask, 0, 10);
     }
