@@ -1,0 +1,24 @@
+/* styles for hover feature required in css file */
+.startButton {
+    -fx-background-color: #01AB3B;
+}
+
+.startButton:hover {
+    -fx-background-color: #006623;
+}
+
+.stopButton {
+    -fx-background-color: #D70000;
+}
+
+.stopButton:hover {
+    -fx-background-color: #960000;
+}
+
+.openButton {
+    -fx-background-color: #737373;
+}
+
+.openButton:hover {
+    -fx-background-color: #4f4f4f;
+}
