@@ -72,6 +72,8 @@ public class VisualizationController {
      */
     public void startAction() {
         timer.startUITimer();
+        initCPUChart();
+        initRAMChart();
     }
 
     /**
