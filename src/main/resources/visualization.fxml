@@ -63,11 +63,11 @@
          </padding></HBox>
       <HBox alignment="CENTER" prefHeight="631.0" prefWidth="1280.0" spacing="20.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="612.0" prefWidth="840.0" spacing="20.0">
+            <VBox alignment="CENTER" prefHeight="612.0" prefWidth="920.0" spacing="20.0">
                <children>
-                  <HBox alignment="CENTER" prefHeight="344.0" prefWidth="840.0" spacing="20.0">
+                  <HBox alignment="CENTER" prefHeight="330.0" prefWidth="920.0" spacing="20.0">
                      <children>
-                        <VBox prefHeight="340.0" prefWidth="415.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
+                        <VBox prefHeight="340.0" prefWidth="450.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
                               <AnchorPane prefHeight="70.0" prefWidth="350.0">
                                  <children>
@@ -82,7 +82,7 @@
                                  </padding>
                               </AnchorPane>
                            </children></VBox>
-                        <VBox prefHeight="340.0" prefWidth="415.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
+                        <VBox prefHeight="340.0" prefWidth="450.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
                               <AnchorPane prefHeight="70.0" prefWidth="350.0">
                                  <children>
@@ -101,7 +101,7 @@
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="256.0" prefWidth="840.0" spacing="20.0">
                      <children>
-                        <VBox prefHeight="252.0" prefWidth="252.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
+                        <VBox prefHeight="252.0" prefWidth="293.33" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
                               <LineChart fx:id="ramChart">
                                 <xAxis>
@@ -112,7 +112,7 @@
                                 </yAxis>
                               </LineChart>
                            </children></VBox>
-                        <VBox prefHeight="252.0" prefWidth="252.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
+                        <VBox prefHeight="252.0" prefWidth="293.33" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
                               <LineChart fx:id="cpuChart">
                                 <xAxis>
@@ -123,7 +123,7 @@
                                 </yAxis>
                               </LineChart>
                            </children></VBox>
-                        <VBox alignment="CENTER" prefHeight="252.0" prefWidth="252.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
+                        <VBox alignment="CENTER" prefHeight="252.0" prefWidth="293.33" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
                               <AnchorPane prefHeight="59.0" prefWidth="252.0">
                                  <children>
@@ -154,7 +154,7 @@
                   </HBox>
                </children>
             </VBox>
-            <VBox alignment="CENTER" prefHeight="612.0" prefWidth="350.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
+            <VBox alignment="CENTER" prefHeight="592.0" prefWidth="306.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                <HBox.margin>
                   <Insets bottom="20.0" />
                </HBox.margin>
@@ -219,6 +219,9 @@
                </children>
             </VBox>
          </children>
+         <VBox.margin>
+            <Insets left="20.0" right="20.0" />
+         </VBox.margin>
       </HBox>
    </children>
 </VBox>
