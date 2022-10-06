@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
-import javafx.beans.binding.Bindings;
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,6 +24,15 @@ public class VisualizationController {
     private Label timerLabel;
     @FXML
     private Label statesSearchedLabel;
+    @FXML
+    private Label inputFileLabel;
+    @FXML
+    private Label outputFileLabel;
+    @FXML
+    private Label tasksLabel;
+    @FXML
+    private Label processorLabel;
+
     @FXML
     private LineChart ramChart;
     @FXML
@@ -68,6 +76,7 @@ public class VisualizationController {
         initCPUChart();
         initRAMChart();
         setPieChart(20, 4);
+        setStatusElements("graph.dot", "outputgraph.dot", 7, 4);
     }
 
     /**
@@ -75,6 +84,20 @@ public class VisualizationController {
      */
     public void stopAction() {
         timer.stopUITimer();
+    }
+
+    /**
+     * Set elements in status panel
+     * @param inputFile
+     * @param outputFile
+     * @param taskCount
+     * @param processorCount
+     */
+    private void setStatusElements(String inputFile, String outputFile, int taskCount, int processorCount) {
+        inputFileLabel.setText(inputFile);
+        outputFileLabel.setText(outputFile);
+        tasksLabel.setText(taskCount + " Tasks");
+        processorLabel.setText(processorCount + " Processors");
     }
 
     /**
@@ -126,6 +149,8 @@ public class VisualizationController {
             timerLabel.setText(timerText);
         });
     }
+
+
 
     /**
      * Sets up chart displaying realtime RAM usage
