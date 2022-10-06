@@ -32,7 +32,10 @@ public class VisualizationController {
     private Label tasksLabel;
     @FXML
     private Label processorLabel;
-
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private Label algoTypeLabel;
     @FXML
     private LineChart ramChart;
     @FXML
@@ -76,7 +79,7 @@ public class VisualizationController {
         initCPUChart();
         initRAMChart();
         setPieChart(20, 4);
-        setStatusElements("graph.dot", "outputgraph.dot", 7, 4);
+        setStatusElements("parellel", "graph.dot", "outputgraph.dot", 7, 4);
     }
 
     /**
@@ -84,6 +87,10 @@ public class VisualizationController {
      */
     public void stopAction() {
         timer.stopUITimer();
+
+        // Change status label text and colour
+        statusLabel.setStyle("-fx-text-fill: #D70000; -fx-opacity: 60%;");
+        statusLabel.setText("STOPPED");
     }
 
     /**
@@ -93,11 +100,14 @@ public class VisualizationController {
      * @param taskCount
      * @param processorCount
      */
-    private void setStatusElements(String inputFile, String outputFile, int taskCount, int processorCount) {
+    private void setStatusElements(String algoType, String inputFile, String outputFile, int taskCount, int processorCount) {
+        algoTypeLabel.setText(algoType.toUpperCase());
         inputFileLabel.setText(inputFile);
         outputFileLabel.setText(outputFile);
         tasksLabel.setText(taskCount + " Tasks");
         processorLabel.setText(processorCount + " Processors");
+        statusLabel.setStyle("-fx-text-fill: #03ab38; -fx-opacity: 60%;");
+        statusLabel.setText("RUNNING");
     }
 
     /**
@@ -149,8 +159,6 @@ public class VisualizationController {
             timerLabel.setText(timerText);
         });
     }
-
-
 
     /**
      * Sets up chart displaying realtime RAM usage

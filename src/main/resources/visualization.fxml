@@ -174,24 +174,24 @@
                      </padding>
                   </AnchorPane>
                   <Region prefHeight="280.0" prefWidth="303.0" />
-                  <Text fill="#02ab3a99" strokeType="OUTSIDE" strokeWidth="0.0" text="RUNNING">
+                  <Label fx:id="statusLabel" textFill="#03ab3899">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
-                  </Text>
+                  </Label>
                   <Label id="timerLabel" fx:id="timerLabel" text="00:00:00.00" textFill="#606060">
                      <font>
                         <Font name="System Bold" size="40.0" />
                      </font>
                   </Label>
-                  <Text fill="#5c5c5c" strokeType="OUTSIDE" strokeWidth="0.0" text="PARALLEL">
+                  <Label fx:id="algoTypeLabel" textFill="#5c5c5c">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                      <VBox.margin>
                         <Insets top="20.0" />
                      </VBox.margin>
-                  </Text>
+                  </Label>
                   <Region prefHeight="372.0" prefWidth="350.0" />
                   <Label fx:id="inputFileLabel" text="input file" textFill="#5c5c5c">
                      <font>
