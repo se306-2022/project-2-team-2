@@ -4,6 +4,7 @@ import models.Schedule;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import utils.Utils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,54 +27,13 @@ public class BranchAndBound {
     }
 
     public Schedule run() {
-        this.bLevels = getBLevels(graph);
+        this.bLevels = Utils.calculateBLevels(graph);
         this.dependents = getDependents(graph);
         this.freeTasks = getFreeTasks(graph);
         this.currentSchedule = new Schedule(new ArrayList<>());
 
         recurse(freeTasks);
         return bestSchedule;
-    }
-
-    /**
-     * Returns array of bLevels indexed by node.
-     * bLevels are calculated by summing computation costs to exit node and taking the maximum.
-     *
-     * @param graph GraphStream graph object.
-     * @return int[] array of bLevels index by node.
-     */
-    public int[] getBLevels(Graph graph) {
-        int numTasks = graph.getNodeCount();
-        int[] bLevels = new int[numTasks];
-
-        for (int node = 0; node < numTasks; node++) {
-            calculateBLevelsDFS(graph, bLevels, node);
-        }
-
-        return bLevels;
-    }
-
-    public int calculateBLevelsDFS(Graph graph, int[] bLevels, int node) {
-        if (bLevels[node] != 0) {
-            return bLevels[node];
-        }
-
-        // If there are no child nodes, we are at an exit task and bLevel is its own weight.
-        List<Edge> outEdges = graph.getNode(node).leavingEdges().collect(Collectors.toList());
-        if (outEdges.isEmpty()) {
-            bLevels[node] = graph.getNode(node).getAttribute("Weight", Double.class).intValue();
-            return bLevels[node];
-        }
-
-        int maxLength = 0;
-        for (Edge edge : outEdges) {
-            Node childNode = edge.getNode1();
-            int childNodeBLevel = calculateBLevelsDFS(graph, bLevels, childNode.getIndex());
-            maxLength = Math.max(maxLength, childNodeBLevel);
-        }
-
-        bLevels[node] = maxLength + graph.getNode(node).getAttribute("Weight", Double.class).intValue();
-        return bLevels[node];
     }
 
     public LinkedList<Node> getFreeTasks(Graph graph) {
@@ -174,6 +134,4 @@ public class BranchAndBound {
     public int[] getbLevels() {
         return bLevels;
     }
-
-
 }
