@@ -1,12 +1,14 @@
 package visualisation;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
+import javafx.beans.binding.Bindings;
 import java.lang.management.ManagementFactory;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.Executors;
@@ -14,6 +16,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import com.sun.management.OperatingSystemMXBean;
 import javafx.scene.control.Label;
+import javafx.scene.chart.PieChart;
 
 public class VisualizationController {
     private static UITimer timer;
@@ -21,9 +24,15 @@ public class VisualizationController {
     @FXML
     private Label timerLabel;
     @FXML
+    private Label statesSearchedLabel;
+    @FXML
     private LineChart ramChart;
     @FXML
     private LineChart cpuChart;
+
+    @FXML
+    private PieChart statesPieChart;
+    private ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
     private ScheduledExecutorService scheduledExecutorService;
     final int WINDOW_SIZE = 10;
 
@@ -34,6 +43,57 @@ public class VisualizationController {
     public void initialize() {
         timer = new UITimer();
         timer.setController(this);
+        initialisePieChart();
+    }
+
+    /**
+     *  Initialise pie chart with all not searched states and 0% label
+     */
+    private void initialisePieChart() {
+        pieChartData.add(new PieChart.Data("Searched", 0));
+        pieChartData.add(new PieChart.Data("Not Searched", 1));
+
+        statesPieChart.setLabelsVisible(false);
+        statesPieChart.setLegendVisible(false);
+        statesPieChart.setData(pieChartData);
+
+        statesSearchedLabel.setText("0%");
+    }
+
+    /**
+     * Handles start action when the start button is pressed
+     */
+    public void startAction() {
+        timer.startUITimer();
+        initCPUChart();
+        initRAMChart();
+        setPieChart(20, 4);
+    }
+
+    /**
+     * Handles stop action when the stop button is pressed
+     */
+    public void stopAction() {
+        timer.stopUITimer();
+    }
+
+    /**
+     * Sets values of pie chart and updates percentage label
+     * @param totalStates
+     * @param statesSearched
+     */
+    private void setPieChart(int totalStates, int statesSearched) {
+        pieChartData.get(0).setPieValue(statesSearched);
+        pieChartData.get(1).setPieValue(totalStates-statesSearched);
+
+        String percentageLabel;
+        if(totalStates != 0) {
+            String percentageSearched = String.valueOf(BigDecimal.valueOf(statesSearched * 100).divide(BigDecimal.valueOf(totalStates), 30, RoundingMode.HALF_UP));
+            percentageLabel = percentageSearched.substring(0, 4) + "%";
+        } else {
+            percentageLabel = "0%";
+        }
+        statesSearchedLabel.setText(percentageLabel);
     }
 
     /**
@@ -65,22 +125,6 @@ public class VisualizationController {
             String timerText = "00:" + minEmpty + minutes + ":" + secEmpty + seconds + "." + msecEmpty + milliseconds;
             timerLabel.setText(timerText);
         });
-    }
-
-    /**
-     * Handles start action when the start button is pressed
-     */
-    public void startAction() {
-        timer.startUITimer();
-        initCPUChart();
-        initRAMChart();
-    }
-
-    /**
-     * Handles stop action when the stop button is pressed
-     */
-    public void stopAction() {
-        timer.stopUITimer();
     }
 
     /**
