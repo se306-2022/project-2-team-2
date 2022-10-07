@@ -2,6 +2,7 @@ package models;
 
 import org.graphstream.graph.Node;
 
+import javax.xml.transform.Result;
 import java.util.*;
 
 /**
@@ -9,10 +10,32 @@ import java.util.*;
  */
 public class Schedule {
 
-    private List<ResultTask> tasks;
+    private LinkedList<ResultTask> tasks;
 
-    public Schedule(List<ResultTask> tasks) {
+    public Schedule(LinkedList<ResultTask> tasks) {
         this.tasks = tasks;
+    }
+
+    public void addTask(ResultTask task) {
+        tasks.add(task);
+    }
+
+    public void popTask() {
+        tasks.removeLast();
+    }
+
+    public LinkedList<ResultTask> getTasks() {
+        return tasks;
+    }
+
+    public int getProcessorFinishTime(int processor) {
+        int processorFinishTime = 0;
+        for (ResultTask task : tasks) {
+            if (task.getProcessor() == processor) {
+                processorFinishTime = Math.max(processorFinishTime, task.getFinishTime());
+            }
+        }
+        return processorFinishTime;
     }
 
     public int getLatestFinishTime() {
@@ -35,6 +58,16 @@ public class Schedule {
         for (ResultTask task : tasks) {
             if (task.getNode().getIndex() == node.getIndex()) {
                 return task.getStartTime();
+            }
+        }
+
+        return 0;
+    }
+
+    public int getTaskProcessor(Node node) {
+        for (ResultTask task : tasks) {
+            if (task.getNode().getIndex() == node.getIndex()) {
+                return task.getProcessor();
             }
         }
 
