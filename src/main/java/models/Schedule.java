@@ -40,4 +40,12 @@ public class Schedule {
 
         return 0;
     }
+
+    public List<ResultTask> getTasksList() {
+        return tasks;
+    }
+
+    public void addTask(ResultTask task) {
+        this.tasks.add(task);
+    }
 }
