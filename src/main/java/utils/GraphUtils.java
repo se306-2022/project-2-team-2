@@ -4,10 +4,41 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Utils {
+public class GraphUtils {
+
+    /**
+     * Gets initial set of free tasks, given task has in-degree of 0.
+     *
+     * @param graph GraphStream graph object.
+     * @return queue of free tasks.
+     */
+    public static LinkedList<Integer> getInitialFreeTasks(Graph graph) {
+        LinkedList<Integer> freeTasks = new LinkedList<>();
+        for (int i = 0; i < graph.getNodeCount(); i++) {
+            if (graph.getNode(i).getInDegree() == 0) {
+                freeTasks.add(i);
+            }
+        }
+        return freeTasks;
+    }
+
+    /**
+     * Calculates the number of dependents each node has.
+     *
+     * @param graph GraphStream graph object.
+     * @return int array of dependents count indexed by node.
+     */
+    public static int[] calculateDependents(Graph graph) {
+        int[] dependents = new int[graph.getNodeCount()];
+        for (int i = 0; i < graph.getNodeCount(); i++) {
+            dependents[i] = graph.getNode(i).getInDegree();
+        }
+        return dependents;
+    }
 
     /**
      * Returns array of bLevels indexed by node.
