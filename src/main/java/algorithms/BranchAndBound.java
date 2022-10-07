@@ -5,7 +5,7 @@ import models.Schedule;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import utils.Utils;
+import utils.GraphUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,31 +33,12 @@ public class BranchAndBound {
     }
 
     public void run() {
-        this.bLevels = Utils.calculateBLevels(graph);
-        this.dependents = calculateDependents(graph);
+        this.bLevels = GraphUtils.calculateBLevels(graph);
+        this.dependents = GraphUtils.calculateDependents(graph);
         this.currentSchedule = new Schedule(new LinkedList<>());
-        LinkedList<Integer> freeTasks = getInitialFreeTasks(graph);
+        LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
         recurse(freeTasks);
-    }
-
-    public LinkedList<Integer> getInitialFreeTasks(Graph graph) {
-        LinkedList<Integer> freeTasks = new LinkedList<>();
-        for (int i = 0; i < graph.getNodeCount(); i++) {
-            if (graph.getNode(i).getInDegree() == 0) {
-                freeTasks.add(i);
-            }
-        }
-
-        return freeTasks;
-    }
-
-    public int[] calculateDependents(Graph graph) {
-        int[] dependents = new int[graph.getNodeCount()];
-        for (int i = 0; i < graph.getNodeCount(); i++) {
-            dependents[i] = graph.getNode(i).getInDegree();
-        }
-        return dependents;
     }
 
     public int longestCriticalPath(LinkedList<Integer> freeTasks) {
