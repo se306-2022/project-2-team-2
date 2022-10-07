@@ -9,15 +9,15 @@ import java.util.*;
  */
 public class Schedule {
 
-    private List<Task> tasks;
+    private List<ResultTask> tasks;
 
-    public Schedule(List<Task> tasks) {
+    public Schedule(List<ResultTask> tasks) {
         this.tasks = tasks;
     }
 
     public int getLatestFinishTime() {
         int time = 0;
-        for (Task task : tasks) {
+        for (ResultTask task : tasks) {
             time = Math.max(time, task.getFinishTime());
         }
         return time;
@@ -25,9 +25,19 @@ public class Schedule {
 
     public int getEarliestFinishTime() {
         int time = (tasks.isEmpty()) ? 0 : Integer.MAX_VALUE;
-        for (Task task : tasks) {
+        for (ResultTask task : tasks) {
             time = Math.min(time, task.getFinishTime());
         }
         return time;
+    }
+
+    public int getTaskStartTime(Node node) {
+        for (ResultTask task : tasks) {
+            if (task.getNode().getIndex() == node.getIndex()) {
+                return task.getStartTime();
+            }
+        }
+
+        return 0;
     }
 }

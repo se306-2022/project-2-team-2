@@ -17,7 +17,7 @@ public class BranchAndBound {
     private Schedule bestSchedule;
     private Schedule currentSchedule;
     private int bestFinishTime = Integer.MAX_VALUE;
-    private int remainingTime = 0;
+    private int freeTasksRemainingTime = 0;
 
     private int[] dependents;
 
@@ -28,15 +28,16 @@ public class BranchAndBound {
 
     public Schedule run() {
         this.bLevels = Utils.calculateBLevels(graph);
-        this.dependents = getDependents(graph);
-        this.freeTasks = getFreeTasks(graph);
+        this.dependents = calculateDependents(graph);
+        this.freeTasks = getInitialFreeTasks(graph);
         this.currentSchedule = new Schedule(new ArrayList<>());
 
         recurse(freeTasks);
+
         return bestSchedule;
     }
 
-    public LinkedList<Node> getFreeTasks(Graph graph) {
+    public LinkedList<Node> getInitialFreeTasks(Graph graph) {
         LinkedList<Node> freeTasks = new LinkedList<>();
         for (int i = 0; i < graph.getNodeCount(); i++) {
             if (graph.getNode(i).getInDegree() == 0) {
@@ -47,7 +48,7 @@ public class BranchAndBound {
         return freeTasks;
     }
 
-    public int[] getDependents(Graph graph) {
+    public int[] calculateDependents(Graph graph) {
         int[] dependents = new int[graph.getNodeCount()];
         for (int i = 0; i < graph.getNodeCount(); i++) {
             dependents[i] = graph.getNode(i).getInDegree();
@@ -75,26 +76,32 @@ public class BranchAndBound {
             return;
         }
 
-        // Check if we have already come across an equivalent schedule.
+        // TODO: Check if we have already come across an equivalent schedule?
 
-        // Check if we can complete tasks in fixed data task order FTO.
+        // TODO: Check if we can complete tasks in fixed data task order FTO?
 
+        // Calculate specific metrics at the current search state.
         int earliestFinishTime = currentSchedule.getEarliestFinishTime();
         int latestFinishTime = currentSchedule.getLatestFinishTime();
-        int loadBalancedTime = remainingTime / numProcessors;
+        int loadBalancedTime = freeTasksRemainingTime / numProcessors;
         int longestCriticalPath = longestCriticalPath(freeTasks);
 
-        HashSet<Integer> seen = new HashSet<>();
+        // Sort free tasks by bLevel priority.
+        freeTasks.sort(Comparator.comparing(n -> bLevels[n.getIndex()]));
+
+        // Go through free tasks.
+        HashSet<Integer> visited = new HashSet<>();
         for (Node node : freeTasks) {
             Node task = freeTasks.remove();
             int taskIndex = graph.getNode(task.getId()).getIndex();
 
-            if (seen.contains(taskIndex)) {
+            // Check if we have already visited task.
+            if (visited.contains(taskIndex)) {
                 freeTasks.add(task);
                 continue;
             }
 
-            // Add equivalent nodes to candidate tasks.
+            // TODO: add equivalent nodes to visited tasks?
 
             // Ignore current schedule if it cannot become the potential optimal.
             if (!isPotential(earliestFinishTime, latestFinishTime, loadBalancedTime, longestCriticalPath)) {
@@ -102,21 +109,34 @@ public class BranchAndBound {
                 continue;
             }
 
-
-            remainingTime -= graph.getNode(taskIndex).getAttribute("Weight", Double.class).intValue();
+            freeTasksRemainingTime -= graph.getNode(taskIndex).getAttribute("Weight", Double.class).intValue();
 
             // For child nodes check if they have no more pending dependents, then add to freeTasks queue.
             List<Edge> childEdges = graph.getNode(taskIndex).leavingEdges().collect(Collectors.toList());
             for (Edge edge : childEdges) {
                 Node child = edge.getNode1();
-                int childIndex = graph.getNode(child.getId()).getIndex();
-                dependents[childIndex]--;
-                if (dependents[childIndex] == 0) {
+                dependents[child.getIndex()]--;
+                if (dependents[child.getIndex()] == 0) {
                     freeTasks.add(child);
                 }
             }
 
-            // Communication costs between processors
+            // Communication costs between processors.
+            int maxDataArrivalTime = 0;
+            int secondMaxDataArrivalTime = 0;
+            int maxDataArrivalProcessor = 0;
+            List<Edge> parentEdges = graph.getNode(taskIndex).enteringEdges().collect(Collectors.toList());
+            for (Edge edge : parentEdges) {
+                Node parent = edge.getNode0();
+                int parentStartTime = currentSchedule.getTaskStartTime(parent);
+                int parentWeight = parent.getAttribute("Weight", Double.class).intValue();
+                int communicationCost = edge.getAttribute("Weight", Double.class).intValue();
+
+                int dataArrivalTime = parentStartTime + parentWeight + communicationCost;
+                if (dataArrivalTime >= maxDataArrivalTime) {
+
+                }
+            }
 
             // Recurse
 
