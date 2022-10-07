@@ -16,8 +16,8 @@ public class Schedule {
         this.tasks = tasks;
     }
 
-    public void addTask(ResultTask task) {
-        tasks.add(task);
+    public void addTask(Node node, int startTime, int finishTime, int processor) {
+        tasks.add(new ResultTask(node, startTime, finishTime, processor));
     }
 
     public void popTask() {

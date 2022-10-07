@@ -1,6 +1,5 @@
 package algorithms;
 
-import models.ResultTask;
 import models.Schedule;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -159,8 +158,7 @@ public class BranchAndBound {
                 previouslyAdded = childAdded;
 
                 // Schedule task to current schedule.
-                ResultTask resultTask = new ResultTask(graph.getNode(task), startTime, startTime + taskWeight, processor);
-                currentSchedule.addTask(resultTask);
+                currentSchedule.addTask(graph.getNode(task), startTime, startTime + taskWeight, processor);
 
                 recurse(nextFreeTasks);
 
