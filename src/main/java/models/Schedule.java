@@ -28,6 +28,10 @@ public class Schedule {
         return tasks;
     }
 
+    public int getNumberOfScheduledTasks() {
+        return tasks.size();
+    }
+
     public int getProcessorFinishTime(int processor) {
         int processorFinishTime = 0;
         for (ResultTask task : tasks) {

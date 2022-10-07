@@ -50,8 +50,15 @@ public class BranchAndBound {
     }
 
     public void recurse(LinkedList<Integer> freeTasks) {
+        // If no more free tasks, check if complete schedule and if finish time beats the fastest time.
         if (freeTasks.isEmpty()) {
-            updateBestSchedule();
+            int finishTime = currentSchedule.getLatestFinishTime();
+            int numberOfScheduledTasks = currentSchedule.getNumberOfScheduledTasks();
+            if (numberOfScheduledTasks == graph.getNodeCount() && currentSchedule.getLatestFinishTime() < fastestTime) {
+                bestSchedule = new Schedule(new LinkedList<>(currentSchedule.getTasks()));
+                fastestTime = finishTime;
+            }
+
             return;
         }
 
@@ -97,7 +104,7 @@ public class BranchAndBound {
                 Node child = edge.getNode1();
                 dependents[child.getIndex()]--;
                 if (dependents[child.getIndex()] == 0) {
-                    freeTasks.add(task);
+                    freeTasks.add(child.getIndex());
                     childAdded = true;
                 }
             }
@@ -182,15 +189,6 @@ public class BranchAndBound {
         boolean criticalPathConstraint = earliestFinishTime + longestCriticalPath >= fastestTime;
         boolean latestFinishTimeConstraint = latestFinishTime >= fastestTime;
         return !loadBalancingConstraint && !criticalPathConstraint && !latestFinishTimeConstraint;
-    }
-
-    public void updateBestSchedule() {
-        int finishTime = currentSchedule.getLatestFinishTime();
-
-        if (finishTime < fastestTime) {
-            fastestTime = finishTime;
-            bestSchedule = new Schedule(currentSchedule.getTasks());
-        }
     }
 
     public Schedule getBestSchedule() {
