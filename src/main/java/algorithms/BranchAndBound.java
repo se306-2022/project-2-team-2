@@ -38,14 +38,10 @@ public class BranchAndBound {
         recurse(freeTasks);
     }
 
-    public int longestCriticalPath(LinkedList<Integer> freeTasks) {
-        int longestCriticalPath = 0;
-        for (Integer node : freeTasks) {
-            longestCriticalPath = Math.max(longestCriticalPath, bLevels[node]);
-        }
-        return longestCriticalPath;
-    }
-
+    /**
+     * Recursive method for dfs traversing search space.
+     * @param freeTasks takes in the queue of free tasks available on each recursive call.
+     */
     public void recurse(LinkedList<Integer> freeTasks) {
         // If no more free tasks, check if complete schedule and if finish time beats the fastest time.
         if (freeTasks.isEmpty()) {
@@ -59,13 +55,13 @@ public class BranchAndBound {
             return;
         }
 
-        // TODO: Check if we have already come across an equivalent schedule.
+        // TODO: Check if we have already come across an equivalent schedule. Can be done with hashing.
 
         // Calculate specific metrics at the current search state.
         int earliestFinishTime = currentSchedule.getEarliestFinishTime();
         int latestFinishTime = currentSchedule.getLatestFinishTime();
         int loadBalancedTime = tasksRemainingTime / numProcessors;
-        int longestCriticalPath = longestCriticalPath(freeTasks);
+        int longestTaskComputeTime = longestTaskComputeTime(freeTasks);
 
         // Sort free tasks by bLevel priority.
         freeTasks.sort(Comparator.comparing(node -> bLevels[node]));
@@ -83,7 +79,7 @@ public class BranchAndBound {
             } // TODO: add equivalent nodes to visited tasks as well.
 
             // Ignore current schedule if it cannot become the potential optimal.
-            if (!isPotential(earliestFinishTime, latestFinishTime, loadBalancedTime, longestCriticalPath)) {
+            if (!isPotential(earliestFinishTime, latestFinishTime, loadBalancedTime, longestTaskComputeTime)) {
                 freeTasks.add(task);
                 continue;
             }
@@ -172,9 +168,31 @@ public class BranchAndBound {
         }
     }
 
-    private boolean isPotential(int earliestFinishTime, int latestFinishTime, int loadBalancedTime, int longestCriticalPath) {
+    /**
+     * Helper method for getting the longest compute time taken, or the highest bLevel value in task queue.
+     * @param freeTasks queue of free tasks available for scheduling.
+     * @return longest time taken through the critical path.
+     */
+    public int longestTaskComputeTime(LinkedList<Integer> freeTasks) {
+        int longestCriticalPath = 0;
+        for (Integer node : freeTasks) {
+            longestCriticalPath = Math.max(longestCriticalPath, bLevels[node]);
+        }
+        return longestCriticalPath;
+    }
+
+    /**
+     * Helper method checks if the current partial schedule is worth further investigation by checking constraints
+     * against the current fastest finish time.
+     * @param earliestFinishTime the earliest processor finish time in current partial schedule.
+     * @param latestFinishTime the latest processor finish time in the current partial schedule.
+     * @param loadBalancedTime the load balanced time across all processors.
+     * @param longestTaskComputeTime the longest possible time through the task graph (compute time)
+     * @return true/false if the current schedule is worth pursuing.
+     */
+    private boolean isPotential(int earliestFinishTime, int latestFinishTime, int loadBalancedTime, int longestTaskComputeTime) {
         boolean loadBalancingConstraint = earliestFinishTime + loadBalancedTime >= fastestTime;
-        boolean criticalPathConstraint = earliestFinishTime + longestCriticalPath >= fastestTime;
+        boolean criticalPathConstraint = earliestFinishTime + longestTaskComputeTime >= fastestTime;
         boolean latestFinishTimeConstraint = latestFinishTime >= fastestTime;
         return !loadBalancingConstraint && !criticalPathConstraint && !latestFinishTimeConstraint;
     }

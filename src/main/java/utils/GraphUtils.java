@@ -9,6 +9,14 @@ import java.util.stream.Collectors;
 
 public class GraphUtils {
 
+    /**
+     * Checks if two nodes are equivalent.
+     * Criteria: same number of in/out degrees, same parent/child nodes and same communication costs.
+     * @param graph GraphStream graph object.
+     * @param nodeA index of first node we want to compare.
+     * @param nodeB index of second node we want to compare.
+     * @return true/false if nodes are equivalent or not.
+     */
     public static boolean isNodeEquivalent(Graph graph, int nodeA, int nodeB) {
         Node a = graph.getNode(nodeA);
         Node b = graph.getNode(nodeB);
@@ -45,6 +53,11 @@ public class GraphUtils {
         return true;
     }
 
+    /**
+     * Creates list of equivalent tasks.
+     * @param graph GraphStream graph object.
+     * @return list of equivalent tasks indexed by task/node index.
+     */
     public static List<Integer>[] getEquivalentTasksList(Graph graph) {
         HashSet<Integer> visited = new HashSet<>();
         List<Integer>[] equivalentTasksMap = new List[graph.getNodeCount()];
@@ -65,6 +78,11 @@ public class GraphUtils {
         return equivalentTasksMap;
     }
 
+    /**
+     * Counts up the total task time. Helper method for getting remaining task time at the start.
+     * @param graph GraphStream graph object.
+     * @return total task time within the graph.
+     */
     public static int getTasksTotalTime(Graph graph) {
         int tasksTotalTime = 0;
         for (int i = 0; i < graph.getNodeCount(); i++) {
@@ -75,7 +93,6 @@ public class GraphUtils {
 
     /**
      * Gets initial set of free tasks, given task has in-degree of 0.
-     *
      * @param graph GraphStream graph object.
      * @return queue of free tasks.
      */
@@ -106,7 +123,6 @@ public class GraphUtils {
     /**
      * Returns array of bLevels indexed by node.
      * bLevels are calculated by summing computation costs to exit node and taking the maximum.
-     *
      * @param graph GraphStream graph object.
      * @return int[] array of bLevels index by node.
      */
