@@ -4,11 +4,74 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GraphUtils {
+
+    public static boolean isNodeEquivalent(Graph graph, int nodeA, int nodeB) {
+        Node a = graph.getNode(nodeA);
+        Node b = graph.getNode(nodeB);
+
+        if (a.getInDegree() != b.getInDegree() || a.getOutDegree() != b.getOutDegree()) return false;
+
+        List<Edge> aChildEdges = a.leavingEdges().collect(Collectors.toList());
+        List<Edge> bChildEdges = b.leavingEdges().collect(Collectors.toList());
+        List<Edge> aParentEdges = a.enteringEdges().collect(Collectors.toList());
+        List<Edge> bParentEdges = b.enteringEdges().collect(Collectors.toList());
+
+        aChildEdges.sort(Comparator.comparingInt(e -> e.getNode1().getIndex()));
+        bChildEdges.sort(Comparator.comparingInt(e -> e.getNode1().getIndex()));
+        for (int i = 0; i < aChildEdges.size(); i++) {
+            int aChild = aChildEdges.get(i).getNode1().getIndex();
+            int bChild = bChildEdges.get(i).getNode1().getIndex();
+
+            int aChildCommunicationCost = aChildEdges.get(i).getAttribute("Weight", Double.class).intValue();
+            int bChildCommunicationCost = bChildEdges.get(i).getAttribute("Weight", Double.class).intValue();
+            if (aChild != bChild || aChildCommunicationCost != bChildCommunicationCost) return false;
+        }
+
+        aParentEdges.sort(Comparator.comparingInt(e -> e.getNode0().getIndex()));
+        bParentEdges.sort(Comparator.comparingInt(e -> e.getNode0().getIndex()));
+        for (int i = 0; i < aParentEdges.size(); i++) {
+            int aParent = aParentEdges.get(i).getNode0().getIndex();
+            int bParent = bParentEdges.get(i).getNode0().getIndex();
+
+            int aParentCommunicationCost = aParentEdges.get(i).getAttribute("Weight", Double.class).intValue();
+            int bParentCommunicationCost = bParentEdges.get(i).getAttribute("Weight", Double.class).intValue();
+            if (aParent != bParent || aParentCommunicationCost != bParentCommunicationCost) return false;
+        }
+
+        return true;
+    }
+
+    public static List<Integer>[] getEquivalentTasksList(Graph graph) {
+        HashSet<Integer> visited = new HashSet<>();
+        List<Integer>[] equivalentTasksMap = new List[graph.getNodeCount()];
+
+        for (int i = 0; i < graph.getNodeCount(); i++) {
+            List<Integer> equivalentTasks = new ArrayList<>();
+            for (int j = 0; j < graph.getNodeCount(); j++) {
+                if (visited.contains(j)) continue;
+                if (isNodeEquivalent(graph, i, j)) {
+                    equivalentTasks.add(j);
+                    visited.add(j);
+                }
+            }
+
+            // TODO: finish this.
+        }
+
+        return equivalentTasksMap;
+    }
+
+    public static int getTasksTotalTime(Graph graph) {
+        int tasksTotalTime = 0;
+        for (int i = 0; i < graph.getNodeCount(); i++) {
+            tasksTotalTime += graph.getNode(i).getAttribute("Weight", Double.class).intValue();
+        }
+        return tasksTotalTime;
+    }
 
     /**
      * Gets initial set of free tasks, given task has in-degree of 0.

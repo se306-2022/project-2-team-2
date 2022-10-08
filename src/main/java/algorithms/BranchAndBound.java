@@ -20,11 +20,8 @@ public class BranchAndBound {
     private Schedule currentSchedule;
 
     private int fastestTime = Integer.MAX_VALUE;
-    private int freeTasksRemainingTime = 0;
-
-
-    private int previousProcessor = -1;
-    private boolean previouslyAdded = false;
+    private int tasksRemainingTime;
+    private boolean previousIsChildAdded = false;
 
     public BranchAndBound(Graph graph, int numProcessors) {
         this.numProcessors = numProcessors;
@@ -34,6 +31,7 @@ public class BranchAndBound {
     public void run() {
         this.bLevels = GraphUtils.calculateBLevels(graph);
         this.dependents = GraphUtils.calculateDependents(graph);
+        this.tasksRemainingTime = GraphUtils.getTasksTotalTime(graph);
         this.currentSchedule = new Schedule(new LinkedList<>());
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
@@ -63,12 +61,10 @@ public class BranchAndBound {
 
         // TODO: Check if we have already come across an equivalent schedule.
 
-        // TODO: Check if we can complete tasks in fixed data task order FTO.
-
         // Calculate specific metrics at the current search state.
         int earliestFinishTime = currentSchedule.getEarliestFinishTime();
         int latestFinishTime = currentSchedule.getLatestFinishTime();
-        int loadBalancedTime = freeTasksRemainingTime / numProcessors;
+        int loadBalancedTime = tasksRemainingTime / numProcessors;
         int longestCriticalPath = longestCriticalPath(freeTasks);
 
         // Sort free tasks by bLevel priority.
@@ -84,9 +80,7 @@ public class BranchAndBound {
             if (visited.contains(task)) {
                 freeTasks.add(task);
                 continue;
-            }
-
-            // TODO: add equivalent nodes to visited tasks.
+            } // TODO: add equivalent nodes to visited tasks as well.
 
             // Ignore current schedule if it cannot become the potential optimal.
             if (!isPotential(earliestFinishTime, latestFinishTime, loadBalancedTime, longestCriticalPath)) {
@@ -94,17 +88,17 @@ public class BranchAndBound {
                 continue;
             }
 
-            freeTasksRemainingTime -= taskWeight;
+            tasksRemainingTime -= taskWeight;
 
             // For child nodes check if they have no more pending dependents, then add to freeTasks queue.
             List<Edge> childEdges = graph.getNode(task).leavingEdges().collect(Collectors.toList());
-            boolean childAdded = false;
+            boolean isChildAdded = false;
             for (Edge edge : childEdges) {
                 Node child = edge.getNode1();
                 dependents[child.getIndex()]--;
                 if (dependents[child.getIndex()] == 0) {
                     freeTasks.add(child.getIndex());
-                    childAdded = true;
+                    isChildAdded = true;
                 }
             }
 
@@ -139,8 +133,8 @@ public class BranchAndBound {
                     isIsomorphic = true;
                 }
 
-                // Duplicate state pruning. Might conflict with FTO.
-                if (!previouslyAdded && processor < previousProcessor) continue;
+                // Duplicate state pruning.
+                if (!previousIsChildAdded && processor < currentSchedule.getLastProcessor()) continue;
 
                 // Start time of next task will account max data arrival time if we're on another processor
                 int startTime = processorFinishTime;
@@ -152,20 +146,16 @@ public class BranchAndBound {
                 if (startTime + bLevels[task] >= fastestTime) continue;
 
                 // Make temporary copies of previous values.
-                int tempPreviousProcessor = previousProcessor;
-                boolean tempPreviouslyAdded = previouslyAdded;
-                previousProcessor = processor;
-                previouslyAdded = childAdded;
+                boolean tempPreviousIsChildAdded = previousIsChildAdded;
+                previousIsChildAdded = isChildAdded;
 
                 // Schedule task to current schedule.
                 currentSchedule.addTask(graph.getNode(task), startTime, startTime + taskWeight, processor);
-
                 recurse(nextFreeTasks);
 
                 // Backtrack undoing task added.
                 currentSchedule.popTask();
-                previousProcessor = tempPreviousProcessor;
-                previouslyAdded = tempPreviouslyAdded;
+                previousIsChildAdded = tempPreviousIsChildAdded;
             }
 
             // Backtrack free tasks queue.
@@ -177,7 +167,7 @@ public class BranchAndBound {
                 }
             }
 
-            freeTasksRemainingTime += taskWeight;
+            tasksRemainingTime += taskWeight;
             freeTasks.add(task);
         }
     }

@@ -20,6 +20,10 @@ public class Schedule {
         tasks.add(new ResultTask(node, startTime, finishTime, processor));
     }
 
+    public int getLastProcessor() {
+        return (tasks.isEmpty()) ? -1 : tasks.getLast().getProcessor();
+    }
+
     public void popTask() {
         tasks.removeLast();
     }
