@@ -47,6 +47,7 @@ public class VisualizationController {
     @FXML
     private BorderPane ganttPane;
     private ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+    private OperatingSystemMXBean osInfo = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
     private ScheduledExecutorService scheduledExecutorService;
     final int WINDOW_SIZE = 10;
     private GanttChart<Number, String> ganttChart;
@@ -170,19 +171,14 @@ public class VisualizationController {
      * Sets up chart displaying realtime RAM usage
      */
     public void initRAMChart() {
-
-        // TODO: Needs cleaning anf refactoring. A lot of duplicate code between initRAMChart() and initCPUChart().
-
-        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-
-        //defining the axes
-        final CategoryAxis xAxis = new CategoryAxis(); // we are gonna plot against time
+        // defining the axes and configuring graph info
+        final int[] index = {-1};
+        final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Time/s");
         xAxis.setAnimated(false); // axis animations are removed
-        yAxis.setLabel("Value");
+        yAxis.setLabel("Usage");
         yAxis.setAnimated(false); // axis animations are removed
-
         ramChart.setTitle("Memory Usage");
         ramChart.setAnimated(false); // disable animations
 
@@ -193,23 +189,13 @@ public class VisualizationController {
         // add series to chart
         ramChart.getData().add(series);
         ramChart.setLegendVisible(false);
-
-        // this is used to display time in HH:mm:ss format
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-
         // setup a scheduled executor to periodically put data into the chart
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-
-        // put dummy data onto graph per second
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-
             // Update the chart
             Platform.runLater(() -> {
-                // get current time
-                Date now = new Date();
-                // put random number with current time
-                series.getData().add(new XYChart.Data<>(simpleDateFormat.format(now), osBean.getFreeSwapSpaceSize()));
-
+                index[0]++;
+                series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()));
                 if (series.getData().size() > WINDOW_SIZE)
                     series.getData().remove(0);
             });
@@ -220,48 +206,34 @@ public class VisualizationController {
      * Sets up chart displaying realtime CPU usage
      */
     public void initCPUChart() {
-
-        // TODO: Needs cleaning and refactoring. A lot of duplicate code between initRAMChart() and initCPUChart().
-
-        OperatingSystemMXBean osBean2 = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-
-        //defining the axes
-        final CategoryAxis xAxis = new CategoryAxis(); // we are gonna plot against time
+        // defining the axes and configuring graph info
+        final int[] index = {-1};
+        final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Time/s");
         xAxis.setAnimated(false); // axis animations are removed
-        yAxis.setLabel("Value");
+        yAxis.setLabel("Usage");
         yAxis.setAnimated(false); // axis animations are removed
-
         cpuChart.setTitle("CPU Usage");
         cpuChart.setAnimated(false); // disable animations
 
         //defining a series to display data
-        XYChart.Series<String, Number> series2 = new XYChart.Series<>();
-        series2.setName("CPU");
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("CPU");
 
         // add series to chart
-        cpuChart.getData().add(series2);
+        cpuChart.getData().add(series);
         cpuChart.setLegendVisible(false);
-
-        // this is used to display time in HH:mm:ss format
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
 
         // setup a scheduled executor to periodically put data into the chart
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-
-        // put dummy data onto graph per second
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-
             // Update the chart
             Platform.runLater(() -> {
-                // get current time
-                Date now = new Date();
-                // put random number with current time
-                series2.getData().add(new XYChart.Data<>(simpleDateFormat.format(now), osBean2.getProcessCpuLoad()));
-
-                if (series2.getData().size() > WINDOW_SIZE)
-                    series2.getData().remove(0);
+                index[0]++;
+                series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getProcessCpuLoad()));
+                if (series.getData().size() > WINDOW_SIZE)
+                    series.getData().remove(0);
             });
         }, 0, 1, TimeUnit.SECONDS);
     }
