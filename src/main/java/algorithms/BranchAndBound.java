@@ -19,6 +19,7 @@ public class BranchAndBound {
 
     private Schedule bestSchedule;
     private Schedule currentSchedule;
+    private HashSet<Integer> visitedSchedules = new HashSet<>();
     private int statesSearched = 0;
 
     // TODO: use a greedy algorithm to get initial bound fastestTime.
@@ -60,7 +61,9 @@ public class BranchAndBound {
             return;
         }
 
-        // TODO: Check if we have already come across an equivalent schedule. Can be done with hashing.
+        // Prune #1: check if we have visited equivalent schedule already using hashes.
+        if (visitedSchedules.contains(currentSchedule.hashCode())) return;
+        visitedSchedules.add(currentSchedule.hashCode());
 
         // Sort free tasks by bLevel priority.
         freeTasks.sort(Comparator.comparing(node -> bLevels[node]));
@@ -71,7 +74,7 @@ public class BranchAndBound {
             int task = freeTasks.remove();
             int taskWeight = graph.getNode(task).getAttribute("Weight", Double.class).intValue();
 
-            // Prune #1: check if we have already visited task.
+            // Prune #2: check if we have already visited task.
             if (visited.contains(task)) {
                 freeTasks.add(task);
                 continue;
@@ -90,16 +93,16 @@ public class BranchAndBound {
             for (int processor = 0; processor < numProcessors; processor++) {
                 int processorFinishTime = currentSchedule.getProcessorFinishTime(processor);
 
-                // Prune #2: processor normalization, avoid scheduling on isomorphic (empty) processor in the future.
+                // Prune #3: processor normalization, avoid scheduling on isomorphic (empty) processor in the future.
                 if (processorFinishTime == 0) {
                     if (isIsomorphic) continue;
                     isIsomorphic = true;
                 }
 
-                // Prune #3: ignore duplicate states pruning.
+                // Prune #4: ignore duplicate states pruning.
                 if (!previousChildBeenAdded && processor < currentSchedule.getLastProcessor()) continue;
 
-                // Prune #4 (MOST IMPORTANT): ignore if start time + task b level can't beat current fastest time.
+                // Prune #5 (MOST IMPORTANT): ignore if start time + task b level can't beat current fastest time.
                 int startTime = minimumStartTime(graph.getNode(task), currentSchedule, processor, processorFinishTime);
                 if (startTime + bLevels[task] >= fastestTime) continue;
 
@@ -133,7 +136,7 @@ public class BranchAndBound {
      * @param node GraphStream Node, the target node and it's children we want to schedule.
      * @return true/false if a child of the current node was added.
      */
-    public boolean addPotentialChildNodesToFreeTasks(LinkedList<Integer> freeTasks, Node node) {
+    private boolean addPotentialChildNodesToFreeTasks(LinkedList<Integer> freeTasks, Node node) {
         boolean isChildAdded = false;
         List<Node> childNodes = node.leavingEdges().map(Edge::getNode1).collect(Collectors.toList());
         for (Node child : childNodes) {

@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class Schedule {
 
-    private LinkedList<ResultTask> tasks;
+    private final LinkedList<ResultTask> tasks;
 
     public Schedule(LinkedList<ResultTask> tasks) {
         this.tasks = tasks;
@@ -72,5 +72,10 @@ public class Schedule {
         }
 
         return 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return tasks.hashCode();
     }
 }
