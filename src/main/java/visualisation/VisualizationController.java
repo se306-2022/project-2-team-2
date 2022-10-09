@@ -9,6 +9,7 @@ import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import com.sun.management.OperatingSystemMXBean;
 import javafx.scene.control.Label;
 import javafx.scene.chart.PieChart;
+import javafx.scene.layout.BorderPane;
 
 public class VisualizationController {
     private static UITimer timer;
@@ -40,12 +42,15 @@ public class VisualizationController {
     private LineChart ramChart;
     @FXML
     private LineChart cpuChart;
-
     @FXML
     private PieChart statesPieChart;
+    @FXML
+    private BorderPane ganttPane;
     private ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
     private ScheduledExecutorService scheduledExecutorService;
     final int WINDOW_SIZE = 10;
+    private GanttChart<Number, String> ganttChart;
+    public static final String processorTitle = "PSR ";
 
     /**
      *  Initialises components of the JavaFX window for visualisation
@@ -69,6 +74,7 @@ public class VisualizationController {
         statesPieChart.setData(pieChartData);
 
         statesSearchedLabel.setText("0%");
+        createGantt();
     }
 
     /**
@@ -259,4 +265,27 @@ public class VisualizationController {
             });
         }, 0, 1, TimeUnit.SECONDS);
     }
+
+    /**
+     * Creates a blank Gantt Chart
+     */
+    public void createGantt() {
+        NumberAxis xAxis = new NumberAxis();
+        CategoryAxis yAxis = new CategoryAxis();
+        ArrayList<String> processorCatStr = new ArrayList<>();
+        ArrayList<XYChart.Series> processorCat = new ArrayList<>();
+
+        for (int i = 0; i < 4 ; i++) { // replace '4' with number of cores to be used
+            processorCatStr.add(processorTitle + (i+1));
+            processorCat.add(new XYChart.Series()); // each processor has its own series
+        }
+
+        yAxis.setCategories(FXCollections.observableArrayList(processorCatStr));
+        ganttChart = new GanttChart<>(xAxis, yAxis);
+        ganttPane.setCenter(ganttChart);
+
+        //live adjust gantt chart based on window size
+        ganttChart.heightProperty().addListener((observable, oldValue, newValue) -> ganttChart.setBlockHeight(newValue.doubleValue()*0.70/(4))); // replace '4' with number of cores to be used
+    }
+
 }
