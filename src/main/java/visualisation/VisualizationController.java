@@ -8,13 +8,12 @@ import javafx.scene.chart.*;
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import com.sun.management.OperatingSystemMXBean;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.chart.PieChart;
 import javafx.scene.layout.BorderPane;
@@ -30,6 +29,10 @@ public class VisualizationController {
     private Label inputFileLabel;
     @FXML
     private Label outputFileLabel;
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button stopButton;
     @FXML
     private Label tasksLabel;
     @FXML
@@ -52,6 +55,7 @@ public class VisualizationController {
     final int WINDOW_SIZE = 10;
     private GanttChart<Number, String> ganttChart;
     public static final String processorTitle = "PSR ";
+    private boolean stop = true;
 
     /**
      *  Initialises components of the JavaFX window for visualisation
@@ -60,7 +64,10 @@ public class VisualizationController {
     public void initialize() {
         timer = new UITimer();
         timer.setController(this);
+        stopButton.setDisable(true);
         initialisePieChart();
+        initCPUChart();
+        initRAMChart();
     }
 
     /**
@@ -82,9 +89,10 @@ public class VisualizationController {
      * Handles start action when the start button is pressed
      */
     public void startAction() {
+        this.stop = false;
+        startButton.setDisable(true);
+        stopButton.setDisable(false);
         timer.startUITimer();
-        initCPUChart();
-        initRAMChart();
         setPieChart(20, 4);
         setStatusElements("parellel", "graph.dot", "outputgraph.dot", 7, 4);
     }
@@ -93,6 +101,9 @@ public class VisualizationController {
      * Handles stop action when the stop button is pressed
      */
     public void stopAction() {
+        this.stop = true;
+        startButton.setDisable(false);
+        stopButton.setDisable(true);
         timer.stopUITimer();
 
         // Change status label text and colour
@@ -194,11 +205,13 @@ public class VisualizationController {
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             // Update the chart
             Platform.runLater(() -> {
-                index[0]++;
-                series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()));
-                if (series.getData().size() > WINDOW_SIZE)
-                    series.getData().remove(0);
-            });
+                if (stop == false) {
+                    index[0]++;
+                    series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()));
+                    if (series.getData().size() > WINDOW_SIZE)
+                        series.getData().remove(0);
+                    }
+                });
         }, 0, 1, TimeUnit.SECONDS);
     }
 
@@ -230,11 +243,13 @@ public class VisualizationController {
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             // Update the chart
             Platform.runLater(() -> {
-                index[0]++;
-                series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getProcessCpuLoad()));
-                if (series.getData().size() > WINDOW_SIZE)
-                    series.getData().remove(0);
-            });
+                if (stop == false) {
+                    index[0]++;
+                    series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getProcessCpuLoad()));
+                    if (series.getData().size() > WINDOW_SIZE)
+                        series.getData().remove(0);
+                    }
+                });
         }, 0, 1, TimeUnit.SECONDS);
     }
 
