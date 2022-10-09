@@ -15,15 +15,11 @@ public class TestBranchAndBound {
     private final String GRAPH_DIR = "src/test/graphs/";
 
     @Test
-    public void TestBasicGraphOutput() {
+    public void TestGraph1() {
         graph = IOParser.read(GRAPH_DIR + "Graph1.dot");
         branchAndBound = new BranchAndBound(graph, 2);
         branchAndBound.run();
-
-        Schedule bestSchedule = branchAndBound.getBestSchedule();
-        for (ResultTask task : bestSchedule.getTasks()) {
-            System.out.println(task.toString());
-        }
+        assertEquals(8, branchAndBound.getFastestTime());
     }
 
     @Test
