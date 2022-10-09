@@ -1,10 +1,7 @@
 package algorithms;
 
 import IO.IOParser;
-import models.ResultTask;
-import models.Schedule;
 import org.graphstream.graph.Graph;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

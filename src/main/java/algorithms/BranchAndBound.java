@@ -12,29 +12,30 @@ import java.util.stream.Collectors;
 public class BranchAndBound {
     private final Graph graph;
     private final int numProcessors;
-
+    private Schedule bestSchedule;
+    private Schedule currentSchedule;
     private int[] bLevels;
     private int[] dependents;
     private List<List<Integer>> equivalentTasksList;
-
-    private Schedule bestSchedule;
-    private Schedule currentSchedule;
-    private HashSet<Integer> visitedSchedules = new HashSet<>();
-    private int statesSearched = 0;
-
-    // TODO: use a greedy algorithm to get initial bound fastestTime.
+    private final HashSet<Integer> visitedSchedules = new HashSet<>();
     private int fastestTime = Integer.MAX_VALUE;
     private boolean previousChildBeenAdded = false;
+    private int statesSearched = 0;
 
     public BranchAndBound(Graph graph, int numProcessors) {
         this.numProcessors = numProcessors;
         this.graph = graph;
     }
 
+    /**
+     * Main executable method of the DFS branch and bound algorithm.
+     */
     public void run() {
+        // Preprocessing
         this.bLevels = GraphUtils.calculateBLevels(graph);
         this.dependents = GraphUtils.calculateDependents(graph);
         this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
+        this.fastestTime = new Greedy(graph, numProcessors).run().getFinishTime();
         this.currentSchedule = new Schedule(new LinkedList<>());
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
