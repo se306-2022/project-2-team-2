@@ -62,7 +62,7 @@ public class BranchAndBound {
         // Calculate specific metrics at the current search state.
         int earliestFinishTime = currentSchedule.getEarliestFinishTime();
         int latestFinishTime = currentSchedule.getLatestFinishTime();
-        int loadBalancedTime = tasksRemainingTime / numProcessors;
+        int loadBalancedTime = (int) Math.ceil(tasksRemainingTime / (double) numProcessors);
         int longestTaskComputeTime = longestTaskComputeTime(freeTasks);
 
         // Sort free tasks by bLevel priority.
@@ -79,8 +79,6 @@ public class BranchAndBound {
                 freeTasks.add(task);
                 continue;
             }
-
-            // Add all equivalent tasks to visited set.
             visited.addAll(equivalentTasksList.get(task));
 
             // Ignore current partial schedule if it cannot become the potential optimal.
@@ -105,6 +103,7 @@ public class BranchAndBound {
 
             // Calculate max communication cost between processors.
             int maxDataArrivalTime = 0;
+            int secondMaxDataArrivalTime = 0;
             int maxDataArrivalProcessor = 0;
             List<Edge> parentEdges = graph.getNode(task).enteringEdges().collect(Collectors.toList());
             for (Edge edge : parentEdges) {
@@ -114,9 +113,17 @@ public class BranchAndBound {
                 int communicationCost = edge.getAttribute("Weight", Double.class).intValue();
                 int dataArrivalTime = parentStartTime + parentWeight + communicationCost;
 
+                // TODO: simplify this:
                 if (dataArrivalTime >= maxDataArrivalTime) {
+                    if (currentSchedule.getTaskProcessor(parent) != maxDataArrivalProcessor) {
+                        secondMaxDataArrivalTime = maxDataArrivalTime;
+                    }
                     maxDataArrivalTime = dataArrivalTime;
                     maxDataArrivalProcessor = currentSchedule.getTaskProcessor(parent);
+                } else if (dataArrivalTime >= secondMaxDataArrivalTime) {
+                    if (currentSchedule.getTaskProcessor(parent) != maxDataArrivalProcessor) {
+                        secondMaxDataArrivalTime = dataArrivalTime;
+                    }
                 }
             }
 
@@ -139,8 +146,10 @@ public class BranchAndBound {
 
                 // Start time of next task will account max data arrival time if we're on another processor
                 int startTime = processorFinishTime;
-                if (processor != maxDataArrivalProcessor && maxDataArrivalTime >= startTime) {
-                    startTime = maxDataArrivalTime;
+                if (processor != maxDataArrivalProcessor) {
+                    startTime = Math.max(startTime, maxDataArrivalTime);
+                } else {
+                    startTime = Math.max(startTime, secondMaxDataArrivalTime);
                 }
 
                 // Prune state if current start time + task b level can't beat current fastest time.
@@ -162,7 +171,7 @@ public class BranchAndBound {
             // Backtrack free tasks queue.
             for (Edge edge : childEdges) {
                 Node child = edge.getNode1();
-                dependents[child.getIndex()]--;
+                dependents[child.getIndex()]++;
                 if (dependents[child.getIndex()] == 1) {
                     freeTasks.removeLast();
                 }
@@ -204,5 +213,9 @@ public class BranchAndBound {
 
     public Schedule getBestSchedule() {
         return bestSchedule;
+    }
+
+    public int getFastestTime() {
+        return fastestTime;
     }
 }
