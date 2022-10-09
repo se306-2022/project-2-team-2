@@ -21,6 +21,7 @@ public class BranchAndBound {
     private Schedule currentSchedule;
     private int statesSearched = 0;
 
+    // TODO: use a greedy algorithm to get initial bound fastestTime.
     private int fastestTime = Integer.MAX_VALUE;
     private boolean previousIsChildAdded = false;
 
@@ -50,11 +51,10 @@ public class BranchAndBound {
 
         // If no more free tasks, check if complete schedule and if finish time beats the fastest time.
         if (freeTasks.isEmpty()) {
-            int finishTime = currentSchedule.getLatestFinishTime();
             int numberOfScheduledTasks = currentSchedule.getNumberOfScheduledTasks();
-            if (numberOfScheduledTasks == graph.getNodeCount() && currentSchedule.getLatestFinishTime() < fastestTime) {
+            if (numberOfScheduledTasks == graph.getNodeCount() && currentSchedule.getFinishTime() < fastestTime) {
                 bestSchedule = new Schedule(new LinkedList<>(currentSchedule.getTasks()));
-                fastestTime = finishTime;
+                fastestTime = currentSchedule.getFinishTime();
             }
 
             return;

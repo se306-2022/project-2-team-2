@@ -46,18 +46,10 @@ public class Schedule {
         return processorFinishTime;
     }
 
-    public int getLatestFinishTime() {
+    public int getFinishTime() {
         int time = 0;
         for (ResultTask task : tasks) {
             time = Math.max(time, task.getFinishTime());
-        }
-        return time;
-    }
-
-    public int getEarliestFinishTime() {
-        int time = (tasks.isEmpty()) ? 0 : Integer.MAX_VALUE;
-        for (ResultTask task : tasks) {
-            time = Math.min(time, task.getFinishTime());
         }
         return time;
     }
