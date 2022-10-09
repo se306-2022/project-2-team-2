@@ -42,6 +42,8 @@ public class CLIParser {
     public static InputCommand commandLineParser(String[] args) {
         init();
 
+        // TODO: Update the CLI to include the new output from Ellen/Matthew, wait for Yuewen to update the I/O.
+
         if (args.length < 2) {
             error(new String[] { "Missing input arguments" });
         }
