@@ -9,11 +9,28 @@ public class CLIParser {
 
     private static String footer;
     private static void init() {
-//        options.addOption(
-//                Option.builder("o").required(false)
-//                        .hasArg(true).argName("Output file name")
-//                        .desc("Specify the file name of the output of the program")
-//                        .build());
+        options.addOption(
+                Option.builder("o").required(false).longOpt("output")
+                        .hasArg(true).argName("Output file name")
+                        .desc("Specify the file name of the output of the program")
+                        .build());
+
+        options.addOption(
+                Option.builder("p").required(false).longOpt("parallelisation")
+                        .hasArg(true).argName("Parallel and number of cores")
+                        .desc("Run the program in parallel with the specified number of cores")
+                        .build());
+
+        options.addOption(
+                Option.builder("v").required(false)
+                        .hasArg(false).longOpt("visualisation")
+                        .desc("Run the GUI Visualisation")
+                        .build());
+
+        options.addOption(
+                Option.builder("h").required(false).longOpt("help")
+                        .hasArg(false).desc("Run the help menu of the program to see the options")
+                        .build());
 
         header =
                 "This program takes a .dot file as input, containing task information, "
