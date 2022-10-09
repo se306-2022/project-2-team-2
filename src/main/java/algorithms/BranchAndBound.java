@@ -15,6 +15,7 @@ public class BranchAndBound {
 
     private int[] bLevels;
     private int[] dependents;
+    private List<List<Integer>> equivalentTasksList;
 
     private Schedule bestSchedule;
     private Schedule currentSchedule;
@@ -32,6 +33,7 @@ public class BranchAndBound {
         this.bLevels = GraphUtils.calculateBLevels(graph);
         this.dependents = GraphUtils.calculateDependents(graph);
         this.tasksRemainingTime = GraphUtils.getTasksTotalTime(graph);
+        this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
         this.currentSchedule = new Schedule(new LinkedList<>());
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
@@ -76,9 +78,12 @@ public class BranchAndBound {
             if (visited.contains(task)) {
                 freeTasks.add(task);
                 continue;
-            } // TODO: add equivalent nodes to visited tasks as well.
+            }
 
-            // Ignore current schedule if it cannot become the potential optimal.
+            // Add all equivalent tasks to visited set.
+            visited.addAll(equivalentTasksList.get(task));
+
+            // Ignore current partial schedule if it cannot become the potential optimal.
             if (!isPotential(earliestFinishTime, latestFinishTime, loadBalancedTime, longestTaskComputeTime)) {
                 freeTasks.add(task);
                 continue;

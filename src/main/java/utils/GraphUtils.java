@@ -58,24 +58,25 @@ public class GraphUtils {
      * @param graph GraphStream graph object.
      * @return list of equivalent tasks indexed by task/node index.
      */
-    public static List<Integer>[] getEquivalentTasksList(Graph graph) {
+    public static List<List<Integer>> getEquivalentTasksList(Graph graph) {
+        List<List<Integer>> equivalentTasksList = new ArrayList<>();
+        for (int i = 0; i < graph.getNodeCount(); i++) equivalentTasksList.add(new ArrayList<>());
+
+
         HashSet<Integer> visited = new HashSet<>();
-        List<Integer>[] equivalentTasksMap = new List[graph.getNodeCount()];
 
         for (int i = 0; i < graph.getNodeCount(); i++) {
-            List<Integer> equivalentTasks = new ArrayList<>();
             for (int j = 0; j < graph.getNodeCount(); j++) {
                 if (visited.contains(j)) continue;
                 if (isNodeEquivalent(graph, i, j)) {
-                    equivalentTasks.add(j);
+                    equivalentTasksList.get(i).add(j);
+                    equivalentTasksList.get(j).add(i);
                     visited.add(j);
                 }
             }
-
-            // TODO: finish this.
         }
 
-        return equivalentTasksMap;
+        return equivalentTasksList;
     }
 
     /**
