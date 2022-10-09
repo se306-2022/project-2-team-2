@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.chart.PieChart;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 
 public class VisualizationController {
     private static UITimer timer;
@@ -49,6 +50,8 @@ public class VisualizationController {
     private PieChart statesPieChart;
     @FXML
     private BorderPane ganttPane;
+    @FXML
+    private HBox buttonBox;
     private ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
     private OperatingSystemMXBean osInfo = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
     private ScheduledExecutorService scheduledExecutorService;
@@ -64,7 +67,8 @@ public class VisualizationController {
     public void initialize() {
         timer = new UITimer();
         timer.setController(this);
-        stopButton.setDisable(true);
+        stopButton.setVisible(false);
+        stopButton.setManaged(false);
         initialisePieChart();
         initCPUChart();
         initRAMChart();
@@ -90,8 +94,12 @@ public class VisualizationController {
      */
     public void startAction() {
         this.stop = false;
-        startButton.setDisable(true);
-        stopButton.setDisable(false);
+//        startButton.setDisable(true);
+//        stopButton.setDisable(false);
+        stopButton.setVisible(true);
+        stopButton.setManaged(true);
+        startButton.setVisible(false);
+        startButton.setManaged(false);
         timer.startUITimer();
         setPieChart(20, 4);
         setStatusElements("parellel", "graph.dot", "outputgraph.dot", 7, 4);
@@ -102,8 +110,12 @@ public class VisualizationController {
      */
     public void stopAction() {
         this.stop = true;
-        startButton.setDisable(false);
-        stopButton.setDisable(true);
+        stopButton.setVisible(false);
+        stopButton.setManaged(false);
+        startButton.setVisible(true);
+        startButton.setManaged(true);
+//        startButton.setDisable(false);
+//        stopButton.setDisable(true);
         timer.stopUITimer();
 
         // Change status label text and colour

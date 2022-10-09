@@ -38,7 +38,7 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                      <HBox.margin>
-                        <Insets right="20.0" />
+                        <Insets />
                      </HBox.margin>
                      <cursor>
                         <Cursor fx:constant="HAND" />
