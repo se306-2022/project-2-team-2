@@ -30,4 +30,11 @@ public class ResultTask {
     public int getProcessor() {
         return processor;
     }
+
+    @Override
+    public String toString() {
+        int weight = node.getAttribute("Weight", Double.class).intValue();
+        return String.format("{Node: %s, weight: %d, startTime: %d, processor: %d}",
+                node.getId(), weight, startTime, processor+1);
+    }
 }

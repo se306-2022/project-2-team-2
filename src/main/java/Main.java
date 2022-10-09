@@ -3,6 +3,7 @@ import IO.IOParser;
 import IO.InputCommand;
 import algorithms.Greedy;
 import models.ResultTask;
+import models.Schedule;
 import org.graphstream.graph.Graph;
 
 public class Main {
@@ -10,12 +11,12 @@ public class Main {
     public static void main(String[] args) {
         commands = CLIParser.commandLineParser(args);;
 
-        Greedy algorithm = new Greedy();
         Graph graph = IOParser.read(commands.getInputFile());
 
-        ResultTask[] result = algorithm.
-                GreedyScheduler(graph, commands.getNumProcessors());
+        Greedy algorithm = new Greedy(graph, commands.getNumProcessors());
 
-        IOParser.write(commands.getOutputFile(), graph, result);
+        Schedule result = algorithm.run();
+
+//        IOParser.write(commands.getOutputFile(), graph, result);
     }
 }

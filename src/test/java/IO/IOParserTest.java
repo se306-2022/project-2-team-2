@@ -2,6 +2,7 @@ package IO;
 
 import algorithms.Greedy;
 import models.ResultTask;
+import models.Schedule;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
 
@@ -29,8 +30,8 @@ public class IOParserTest {
     @Test
     public void testFileWriteOutput() {
         Graph graph = IOParser.read("src/test/graphs/graph1.dot");
-        Greedy greedy = new Greedy();
-        ResultTask resultTasks[] = greedy.GreedyScheduler(graph, 1);
-        IOParser.write("src/test/graphs/graph1Output.dot", graph, resultTasks);
+        Greedy greedy = new Greedy(graph, 2);
+        Schedule schedule = greedy.run();
+//        IOParser.write("src/test/graphs/graph1Output.dot", graph, schedule);
     }
 }

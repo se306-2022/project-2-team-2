@@ -5,8 +5,7 @@ import models.Schedule;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import models.ResultTask;
-import utils.Utils;
+import utils.GraphUtils;
 
 public class Greedy {
     private Schedule bestSchedule;
@@ -14,6 +13,7 @@ public class Greedy {
     private Graph graph;
     private Comparator<Integer>[] comparators;
     private int processors;
+    private int bestTime = Integer.MAX_VALUE;
 
     public Greedy(Graph graph, int processors) {
         this.graph = graph;
@@ -21,13 +21,13 @@ public class Greedy {
     }
 
     public void setComparators() {
-        comparators = new Comparator<>[]{new WeightComparator(), new BottomLevelComparator()};
+        comparators = new Comparator[]{new WeightComparator(), new BottomLevelComparator()};
     }
 
     public Schedule run() {
         setComparators();
         for (int i = 0; i < 2; i++) {
-            this.currentSchedule = new Schedule(new ArrayList<>());
+            this.currentSchedule = new Schedule(new LinkedList<>());
             GreedyScheduler(comparators[i]);
         }
 
@@ -87,7 +87,7 @@ public class Greedy {
 
             //add current node to results map
             int pos = graph.getNode(current).getIndex();
-            currentSchedule.addTask(new ResultTask(node, minStart, finishTime, currProcessor));
+            currentSchedule.addTask(node, minStart, finishTime, currProcessor);
 
             // get children of current node and iterate through
             for (Edge edge : new Iterable<Edge>() {
@@ -125,14 +125,19 @@ public class Greedy {
         }
 
         //compare current schedule and replace best with current if the final finish time is shorter
-        if (finishTime < bestSchedule.getEarliestFinishTime()) {
+        if (finishTime < bestTime) {
             bestSchedule = currentSchedule;
+            bestTime = finishTime;
         }
 
     }
 
+    public int getFastestTime() {
+        return bestTime;
+    }
+
     private class BottomLevelComparator implements Comparator<Integer> {
-        int[] bottomLevels = Utils.calculateBLevels(graph);
+        int[] bottomLevels = GraphUtils.calculateBLevels(graph);
         @Override
         public int compare(Integer o1, Integer o2) {
             int taskA = bottomLevels[o1];
