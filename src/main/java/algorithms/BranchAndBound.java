@@ -23,7 +23,7 @@ public class BranchAndBound {
 
     // TODO: use a greedy algorithm to get initial bound fastestTime.
     private int fastestTime = Integer.MAX_VALUE;
-    private boolean previousIsChildAdded = false;
+    private boolean previousChildBeenAdded = false;
 
     public BranchAndBound(Graph graph, int numProcessors) {
         this.numProcessors = numProcessors;
@@ -80,16 +80,7 @@ public class BranchAndBound {
             visited.addAll(equivalentTasksList.get(task));
 
             // For child nodes check if they have no more pending dependents, then add to freeTasks queue.
-            List<Edge> childEdges = graph.getNode(task).leavingEdges().collect(Collectors.toList());
-            boolean isChildAdded = false;
-            for (Edge edge : childEdges) {
-                Node child = edge.getNode1();
-                dependents[child.getIndex()]--;
-                if (dependents[child.getIndex()] == 0) {
-                    freeTasks.add(child.getIndex());
-                    isChildAdded = true;
-                }
-            }
+            boolean childBeenAdded = addPotentialChildNodesToFreeTasks(freeTasks, graph.getNode(task));
 
             // Deep copy current free tasks for next recursive iteration.
             LinkedList<Integer> nextFreeTasks = new LinkedList<>(freeTasks);
@@ -106,15 +97,15 @@ public class BranchAndBound {
                 }
 
                 // Prune #3: ignore duplicate states pruning.
-                if (!previousIsChildAdded && processor < currentSchedule.getLastProcessor()) continue;
+                if (!previousChildBeenAdded && processor < currentSchedule.getLastProcessor()) continue;
 
                 // Prune #4 (MOST IMPORTANT): ignore if start time + task b level can't beat current fastest time.
                 int startTime = minimumStartTime(graph.getNode(task), currentSchedule, processor, processorFinishTime);
                 if (startTime + bLevels[task] >= fastestTime) continue;
 
                 // Make temporary copies of previous values.
-                boolean tempPreviousIsChildAdded = previousIsChildAdded;
-                previousIsChildAdded = isChildAdded;
+                boolean tempPreviousIsChildAdded = previousChildBeenAdded;
+                previousChildBeenAdded = childBeenAdded;
 
                 // Schedule task to current schedule.
                 currentSchedule.addTask(graph.getNode(task), startTime, startTime + taskWeight, processor);
@@ -122,20 +113,37 @@ public class BranchAndBound {
 
                 // Backtrack undoing task added.
                 currentSchedule.popTask();
-                previousIsChildAdded = tempPreviousIsChildAdded;
+                previousChildBeenAdded = tempPreviousIsChildAdded;
             }
 
             // Backtrack free tasks queue.
-            for (Edge edge : childEdges) {
-                Node child = edge.getNode1();
+            List<Node> childNodes = graph.getNode(task).leavingEdges().map(Edge::getNode1).collect(Collectors.toList());
+            for (Node child : childNodes) {
                 dependents[child.getIndex()]++;
-                if (dependents[child.getIndex()] == 1) {
-                    freeTasks.removeLast();
-                }
+                if (dependents[child.getIndex()] == 1) freeTasks.removeLast();
             }
 
             freeTasks.add(task);
         }
+    }
+
+    /**
+     * Add a tasks child nodes to free tasks queue, if their dependent nodes have been scheduled.
+     * @param freeTasks queue of free tasks ready to be scheduled.
+     * @param node GraphStream Node, the target node and it's children we want to schedule.
+     * @return true/false if a child of the current node was added.
+     */
+    public boolean addPotentialChildNodesToFreeTasks(LinkedList<Integer> freeTasks, Node node) {
+        boolean isChildAdded = false;
+        List<Node> childNodes = node.leavingEdges().map(Edge::getNode1).collect(Collectors.toList());
+        for (Node child : childNodes) {
+            dependents[child.getIndex()]--;
+            if (dependents[child.getIndex()] == 0) {
+                freeTasks.add(child.getIndex());
+                isChildAdded = true;
+            }
+        }
+        return isChildAdded;
     }
 
     /**
