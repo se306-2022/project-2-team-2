@@ -2,8 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
@@ -84,6 +84,7 @@
                                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </padding>
                               </AnchorPane>
+                              <BorderPane fx:id="graphPane" prefHeight="247.0" prefWidth="449.0" />
                            </children></VBox>
                         <VBox prefHeight="340.0" prefWidth="450.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
@@ -107,25 +108,49 @@
                      <children>
                         <VBox prefHeight="252.0" prefWidth="293.33" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
-                              <LineChart fx:id="ramChart">
+                              <AnchorPane prefHeight="59.0" prefWidth="252.0">
+                                 <children>
+                                    <Text fill="#5e5e5e" strokeType="OUTSIDE" strokeWidth="0.0" text="MEMORY USAGE" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <font>
+                                          <Font name="System Bold" size="16.0" />
+                                       </font>
+                                    </Text>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="20.0" right="20.0" top="20.0" />
+                                 </padding>
+                              </AnchorPane>
+                              <AreaChart fx:id="ramChart" styleClass="chart-series-area-line2" stylesheets="@visualization.css">
                                 <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
+                                  <CategoryAxis label="Time (s)" side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis side="LEFT" />
+                                  <NumberAxis label="Usage (GB)" side="LEFT" />
                                 </yAxis>
-                              </LineChart>
+                              </AreaChart>
                            </children></VBox>
                         <VBox prefHeight="252.0" prefWidth="293.33" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
-                              <LineChart fx:id="cpuChart">
+                              <AnchorPane prefHeight="59.0" prefWidth="252.0">
+                                 <children>
+                                    <Text fill="#5e5e5e" strokeType="OUTSIDE" strokeWidth="0.0" text="CPU USAGE" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <font>
+                                          <Font name="System Bold" size="16.0" />
+                                       </font>
+                                    </Text>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="20.0" right="20.0" top="20.0" />
+                                 </padding>
+                              </AnchorPane>
+                              <AreaChart fx:id="cpuChart">
                                 <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
+                                  <CategoryAxis label="Time (s)" side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis side="LEFT" />
+                                  <NumberAxis label="Usage (%)" side="LEFT" />
                                 </yAxis>
-                              </LineChart>
+                              </AreaChart>
                            </children></VBox>
                         <VBox alignment="CENTER" prefHeight="252.0" prefWidth="293.33" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); -fx-background-radius: 25px;">
                            <children>
@@ -138,7 +163,7 @@
                                     </Text>
                                  </children>
                                  <padding>
-                                    <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+                                    <Insets bottom="5.0" left="20.0" right="20.0" top="20.0" />
                                  </padding>
                               </AnchorPane>
                               <PieChart fx:id="statesPieChart" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="132.0" prefWidth="252.0" />

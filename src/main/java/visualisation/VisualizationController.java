@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.chart.PieChart;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.util.StringConverter;
 
 public class VisualizationController {
     private static UITimer timer;
@@ -43,9 +44,9 @@ public class VisualizationController {
     @FXML
     private Label algoTypeLabel;
     @FXML
-    private LineChart ramChart;
+    private AreaChart cpuChart;
     @FXML
-    private LineChart cpuChart;
+    private AreaChart ramChart;
     @FXML
     private PieChart statesPieChart;
     @FXML
@@ -94,8 +95,6 @@ public class VisualizationController {
      */
     public void startAction() {
         this.stop = false;
-//        startButton.setDisable(true);
-//        stopButton.setDisable(false);
         stopButton.setVisible(true);
         stopButton.setManaged(true);
         startButton.setVisible(false);
@@ -114,8 +113,6 @@ public class VisualizationController {
         stopButton.setManaged(false);
         startButton.setVisible(true);
         startButton.setManaged(true);
-//        startButton.setDisable(false);
-//        stopButton.setDisable(true);
         timer.stopUITimer();
 
         // Change status label text and colour
@@ -198,20 +195,18 @@ public class VisualizationController {
         final int[] index = {-1};
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Time/s");
         xAxis.setAnimated(false); // axis animations are removed
-        yAxis.setLabel("Usage");
         yAxis.setAnimated(false); // axis animations are removed
-        ramChart.setTitle("Memory Usage");
         ramChart.setAnimated(false); // disable animations
 
         //defining a series to display data
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("RAM");
-
         // add series to chart
         ramChart.getData().add(series);
         ramChart.setLegendVisible(false);
+        ramChart.setCreateSymbols(false);
+        ramChart.setStyle(".chart-series-area-line2");
         // setup a scheduled executor to periodically put data into the chart
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(() -> {
@@ -219,7 +214,7 @@ public class VisualizationController {
             Platform.runLater(() -> {
                 if (stop == false) {
                     index[0]++;
-                    series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()));
+                    series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()/1000000000));
                     if (series.getData().size() > WINDOW_SIZE)
                         series.getData().remove(0);
                     }
@@ -235,11 +230,8 @@ public class VisualizationController {
         final int[] index = {-1};
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Time/s");
         xAxis.setAnimated(false); // axis animations are removed
-        yAxis.setLabel("Usage");
         yAxis.setAnimated(false); // axis animations are removed
-        cpuChart.setTitle("CPU Usage");
         cpuChart.setAnimated(false); // disable animations
 
         //defining a series to display data
@@ -249,6 +241,7 @@ public class VisualizationController {
         // add series to chart
         cpuChart.getData().add(series);
         cpuChart.setLegendVisible(false);
+        cpuChart.setCreateSymbols(false);
 
         // setup a scheduled executor to periodically put data into the chart
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -257,7 +250,7 @@ public class VisualizationController {
             Platform.runLater(() -> {
                 if (stop == false) {
                     index[0]++;
-                    series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getProcessCpuLoad()));
+                    series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getProcessCpuLoad()*100));
                     if (series.getData().size() > WINDOW_SIZE)
                         series.getData().remove(0);
                     }

@@ -30,3 +30,25 @@
 .default-color1.chart-pie {
     -fx-pie-color: #606060;
 }
+
+#cpuChart .chart-series-area-line {
+    -fx-stroke: #00239E;
+    -fx-stroke-width: 2px;
+    -fx-opacity: 70%;
+}
+
+#cpuChart .chart-series-area-fill {
+    -fx-fill: #00239E;
+    -fx-opacity: 60%;
+}
+
+#ramChart .chart-series-area-line {
+    -fx-stroke: #06B5C0;
+    -fx-stroke-width: 2px;
+    -fx-opacity: 70%;
+}
+
+#ramChart .chart-series-area-fill {
+    -fx-fill: #06B5C0;
+    -fx-opacity: 60%;
+}
