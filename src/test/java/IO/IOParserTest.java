@@ -1,5 +1,6 @@
 package IO;
 
+import algorithms.BranchAndBound;
 import algorithms.Greedy;
 import models.ResultTask;
 import models.Schedule;
@@ -25,13 +26,13 @@ public class IOParserTest {
     }
 
     /**
-     * Test that a dot file with a valid schedule is produced
+     * Test that a dot file with a valid schedule is produced with branch and bound
      */
     @Test
     public void testFileWriteOutput() {
         Graph graph = IOParser.read("src/test/graphs/graph1.dot");
-        Greedy greedy = new Greedy(graph, 2);
-        Schedule schedule = greedy.run();
-//        IOParser.write("src/test/graphs/graph1Output.dot", graph, schedule);
+        BranchAndBound branchAndBound = new BranchAndBound(graph, 2);
+        branchAndBound.run();
+        IOParser.write("src/test/graphs/graph1Output.dot", graph, branchAndBound.getBestSchedule());
     }
 }
