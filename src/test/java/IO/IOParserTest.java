@@ -2,13 +2,11 @@ package IO;
 
 import algorithms.BranchAndBound;
 import algorithms.Greedy;
-import models.ResultTask;
 import models.Schedule;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-
 
 public class IOParserTest {
 
@@ -35,4 +33,17 @@ public class IOParserTest {
         branchAndBound.run();
         IOParser.write("src/test/graphs/graph1Output.dot", graph, branchAndBound.getBestSchedule());
     }
+
+
+    /**
+     * Test that a dot file with a valid schedule is produced with a*
+     */
+    @Test
+    public void testFileWriteOutputGreedy(){
+        Graph graph = IOParser.read("src/test/graphs/Nodes_7_OutTree.dot");
+        Greedy greedy = new Greedy(graph, 2);
+        Schedule schedule = greedy.run();
+        IOParser.write("src/test/graphs/Nodes_7_OutTree_Output.dot", graph, schedule);
+    }
+
 }
