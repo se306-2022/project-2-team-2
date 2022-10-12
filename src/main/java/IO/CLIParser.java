@@ -16,8 +16,8 @@ public class CLIParser {
                         .build());
 
         options.addOption(
-                Option.builder("p").required(false).longOpt("parallelisation")
-                        .hasArg(true).argName("Parallel and number of cores")
+                Option.builder("p").required(false).longOpt("parallel")
+                        .hasArg(true).argName("Parallel")
                         .desc("Run the program in parallel with the specified number of cores")
                         .build());
 
@@ -29,7 +29,7 @@ public class CLIParser {
 
         options.addOption(
                 Option.builder("h").required(false).longOpt("help")
-                        .hasArg(false).desc("Run the help menu of the program to see the options")
+                        .hasArg(false).desc("Run the help menu of the program")
                         .build());
 
         header =
@@ -42,8 +42,6 @@ public class CLIParser {
     public static InputCommand commandLineParser(String[] args) {
         init();
 
-        // TODO: Update the CLI to include the new output from Ellen/Matthew, wait for Yuewen to update the I/O.
-
         if (args.length < 2) {
             error(new String[] { "Missing input arguments" });
         }
@@ -51,6 +49,7 @@ public class CLIParser {
         InputCommand inputCommand = new InputCommand();
         String inputFile = args[0];
         CommandLine commandLineOption = parseOptions(args);
+
         inputCommand.setInputFile(inputFile);
 
         inputCommand.setNumProcessors(parseNumProcessors(args));
@@ -61,6 +60,20 @@ public class CLIParser {
             inputCommand.setCustomOutputFile(true);
 
         }
+
+        if (commandLineOption.hasOption('h')) {
+            help();
+        }
+
+        if (commandLineOption.hasOption('p')) {
+            inputCommand.setParallel(true);
+            int numCores = getOptionValueInt(commandLineOption, 'p');
+            inputCommand.setNumParallelCores(numCores);
+        }
+
+//        if (commandLineOption.hasOption('v')) {
+//            // TODO: Show visualisation need to wait for it to be completed
+//        }
 
         return inputCommand;
     }
@@ -90,6 +103,19 @@ public class CLIParser {
         return commandLine.getOptionValue(option);
     }
 
+    private static int getOptionValueInt(CommandLine commandLine, char option) {
+        try {
+            String intString = commandLine.getOptionValue(option);
+            return Integer.parseInt(intString);
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing option value of integer type.");
+            help();
+            System.exit(1);
+        }
+
+        return -1;
+    }
+
     private static void error(String[] messages) {
         for (String msg : messages) {
             System.err.println(msg);
@@ -100,6 +126,6 @@ public class CLIParser {
 
     private static void help() {
         HelpFormatter helpFormatter = new HelpFormatter();
-        helpFormatter.printHelp("scheduler [INPUT-FILE] [NUM_PROCESSORS]", header, options, footer);
+        helpFormatter.printHelp("scheduler [INPUT-FILE] [NUM_PROCESSORS] ", header, options, footer, true);
     }
 }

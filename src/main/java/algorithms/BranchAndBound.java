@@ -41,7 +41,7 @@ public class BranchAndBound {
 
         recurse(freeTasks);
 
-        System.out.println("Sates searched: " + statesSearched);
+        System.out.println("States searched: " + statesSearched);
     }
 
     /**
