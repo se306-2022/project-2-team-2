@@ -1,5 +1,6 @@
 package visualisation;
 
+import IO.IOParser;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +20,9 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
+import org.graphstream.graph.Graph;
+import org.graphstream.ui.fx_viewer.FxViewPanel;
+import org.graphstream.ui.fx_viewer.FxViewer;
 
 public class VisualizationController {
     private static UITimer timer;
@@ -53,11 +57,15 @@ public class VisualizationController {
     private BorderPane ganttPane;
     @FXML
     private HBox buttonBox;
+    @FXML
+    private  BorderPane graphPane;
     private ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
     private OperatingSystemMXBean osInfo = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
     private ScheduledExecutorService scheduledExecutorService;
     final int WINDOW_SIZE = 10;
     private GanttChart<Number, String> ganttChart;
+
+    private InputGraph inputGraph;
     public static final String processorTitle = "PSR ";
     private boolean stop = true;
 
@@ -73,6 +81,7 @@ public class VisualizationController {
         initialisePieChart();
         initCPUChart();
         initRAMChart();
+        createGraph();
     }
 
     /**
@@ -278,6 +287,19 @@ public class VisualizationController {
 
         //live adjust gantt chart based on window size
         ganttChart.heightProperty().addListener((observable, oldValue, newValue) -> ganttChart.setBlockHeight(newValue.doubleValue()*0.70/(4))); // replace '4' with number of cores to be used
+    }
+
+    public void createGraph() {
+        // graph to test with
+        Graph graph = IOParser.read("src/test/graphs/graph1.dot");
+
+        System.setProperty("org.graphstream.ui", "javafx");
+
+        inputGraph = new InputGraph(graph, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        inputGraph.enableAutoLayout();
+
+        FxViewPanel viewPanel = (FxViewPanel) inputGraph.addDefaultView(false);
+        graphPane.setCenter(viewPanel);
     }
 
 }
