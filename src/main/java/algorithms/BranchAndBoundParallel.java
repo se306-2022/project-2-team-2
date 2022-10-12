@@ -61,9 +61,9 @@ public class BranchAndBoundParallel {
         protected void compute() {
             // If no more free tasks, check if complete schedule and if finish time beats the fastest time.
             if (freeTasks.isEmpty()) {
-                int numberOfScheduledTasks = currentSchedule.getNumberOfScheduledTasks();
-                if (numberOfScheduledTasks == graph.getNodeCount() && currentSchedule.getFinishTime() < fastestTime) {
-                    synchronized (RecursiveWorker.class) {
+                synchronized (RecursiveWorker.class) {
+                    int numberOfScheduledTasks = currentSchedule.getNumberOfScheduledTasks();
+                    if (numberOfScheduledTasks == graph.getNodeCount() && currentSchedule.getFinishTime() < fastestTime) {
                         bestSchedule = new Schedule(new LinkedList<>(currentSchedule.getTasks()));
                         fastestTime = currentSchedule.getFinishTime();
                     }
@@ -130,7 +130,7 @@ public class BranchAndBoundParallel {
                     currentSchedule.addTask(graph.getNode(task), startTime, startTime + taskWeight, processor);
 
                     RecursiveWorker recursiveWorker = new RecursiveWorker(
-                            new Schedule(currentSchedule.getTasks()),
+                            new Schedule(new LinkedList<>(currentSchedule.getTasks())),
                             new LinkedList<>(nextFreeTasks),
                             Arrays.copyOf(dependents, dependents.length),
                             previousChildBeenAdded);
@@ -151,7 +151,7 @@ public class BranchAndBoundParallel {
 
                 freeTasks.add(task);
 
-                ForkJoinTask.invokeAll(recursiveWorkers);
+                invokeAll(recursiveWorkers);
             }
         }
 
