@@ -2,6 +2,8 @@ package models;
 
 import org.graphstream.graph.Node;
 
+import java.util.Objects;
+
 public class ResultTask {
     Node node;
     int startTime;
@@ -29,5 +31,17 @@ public class ResultTask {
 
     public int getProcessor() {
         return processor;
+    }
+
+    @Override
+    public String toString() {
+        int weight = node.getAttribute("Weight", Double.class).intValue();
+        return String.format("{Node: %s, weight: %d, startTime: %d, processor: %d}",
+                node.getId(), weight, startTime, processor+1);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(node.getIndex(), startTime, processor);
     }
 }

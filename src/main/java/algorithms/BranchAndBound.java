@@ -1,119 +1,187 @@
 package algorithms;
 
-import models.Processor;
-import models.State;
-import models.Task;
+import models.Schedule;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import utils.GraphUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class BranchAndBound {
-
-    private State bestSchedule;
-
-    private Graph graph;
-
-    private int numProcessors;
-
+    private final Graph graph;
+    private final int numProcessors;
+    private Schedule bestSchedule;
+    private Schedule currentSchedule;
     private int[] bLevels;
+    private int[] dependents;
+    private List<List<Integer>> equivalentTasksList;
+    private final HashSet<Integer> visitedSchedules = new HashSet<>();
+    private int fastestTime = Integer.MAX_VALUE;
+    private boolean previousChildBeenAdded = false;
+    private int statesSearched = 0;
 
     public BranchAndBound(Graph graph, int numProcessors) {
         this.numProcessors = numProcessors;
         this.graph = graph;
-        this.bLevels = getBLevels(graph);
     }
 
     /**
-     * Returns array of bLevels indexed by node.
-     * bLevels are calculated by summing computation costs to exit node and taking the maximum.
-     *
-     * @param graph GraphStream graph object.
-     * @return int[] array of bLevels index by node.
+     * Main executable method of the DFS branch and bound algorithm.
      */
-    public int[] getBLevels(Graph graph) {
-        int numTasks = graph.getNodeCount();
-        int[] bLevels = new int[numTasks];
+    public void run() {
+        // Preprocessing
+        this.bLevels = GraphUtils.calculateBLevels(graph);
+        this.dependents = GraphUtils.calculateDependents(graph);
+        this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
+        this.fastestTime = new Greedy(graph, numProcessors).run().getFinishTime();
+        this.currentSchedule = new Schedule(new LinkedList<>());
+        LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
-        for (int node = 0; node < numTasks; node++) {
-            calculateBLevelsDFS(graph, bLevels, node);
-        }
+        recurse(freeTasks);
 
-        return bLevels;
+        System.out.println("States searched: " + statesSearched);
     }
 
-    public int calculateBLevelsDFS(Graph graph, int[] bLevels, int node) {
-        if (bLevels[node] != 0) {
-            return bLevels[node];
-        }
+    /**
+     * Recursive method for dfs traversing search space.
+     * @param freeTasks takes in the queue of free tasks available on each recursive call.
+     */
+    public void recurse(LinkedList<Integer> freeTasks) {
+        statesSearched++;
 
-        // If there are no child nodes, we are at an exit task and bLevel is its own weight.
-        List<Edge> outEdges = graph.getNode(node).leavingEdges().collect(Collectors.toList());
-        if (outEdges.isEmpty()) {
-            bLevels[node] = graph.getNode(node).getAttribute("Weight", Double.class).intValue();
-            return bLevels[node];
-        }
+        // If no more free tasks, check if complete schedule and if finish time beats the fastest time.
+        if (freeTasks.isEmpty()) {
+            int numberOfScheduledTasks = currentSchedule.getNumberOfScheduledTasks();
+            if (numberOfScheduledTasks == graph.getNodeCount() && currentSchedule.getFinishTime() < fastestTime) {
+                bestSchedule = new Schedule(new LinkedList<>(currentSchedule.getTasks()));
+                fastestTime = currentSchedule.getFinishTime();
+            }
 
-        int maxLength = 0;
-        for (Edge edge : outEdges) {
-            Node childNode = edge.getNode1();
-            int childNodeBLevel = calculateBLevelsDFS(graph, bLevels, childNode.getIndex());
-            maxLength = Math.max(maxLength, childNodeBLevel);
-        }
-
-        bLevels[node] = maxLength + graph.getNode(node).getAttribute("Weight", Double.class).intValue();
-        return bLevels[node];
-    }
-
-    public void recurse(State state) {
-        if (state.getFreeNodes().isEmpty()) {
-            this.bestSchedule = state; // Need to deep copy
-            // Note: state, processor, task model might make this painful.
             return;
         }
 
-        for (Node node : state.getFreeNodes()) {
-            state.getFreeNodes().remove(node);
-            for (Processor processor : state.getProcessors()) {
+        // Prune #1: check if we have visited equivalent schedule already using hashes.
+        if (visitedSchedules.contains(currentSchedule.hashCode())) return;
+        visitedSchedules.add(currentSchedule.hashCode());
 
-                // Might be redundant if we just want earliest possible processor time.
-                // Free task queue contains only tasks we can possibily schedule.
-                List<Edge> inEdges = node.enteringEdges().collect(Collectors.toList());
-                for (Edge edge : inEdges) {
-                    Node parentNode = edge.getNode0();
-                    // Get max parent starting time.
-                    // Include transfer time if in another processor.
-                }
+        // Sort free tasks by bLevel priority.
+        freeTasks.sort(Comparator.comparing(node -> bLevels[node]));
 
-                int startTime = 0;
-                int finishTime = startTime + Integer.parseInt(node.getAttribute("cost").toString());
-                Task task = new Task(node, startTime, finishTime, processor.getId());
-                processor.addTask(task);
+        // Go through all the free tasks.
+        HashSet<Integer> visited = new HashSet<>();
+        for (int i = 0; i < freeTasks.size(); i++) {
+            int task = freeTasks.remove();
+            int taskWeight = graph.getNode(task).getAttribute("Weight", Double.class).intValue();
 
-                List<Edge> outEdges = node.leavingEdges().collect(Collectors.toList());
-                for (Edge edge : outEdges) {
-                    Node childNode = edge.getNode1();
-                    // if parent nodes have been scheduled.
-                    // Add child nodes to freeTasks.
-                }
-
-                recurse(state);
-
-                processor.removeTask(task);
-                for (Edge edge : outEdges) {
-                    Node childNode = edge.getNode1();
-                    // Remove child nodes from freeTasks.
-                }
+            // Prune #2: check if we have already visited task.
+            if (visited.contains(task)) {
+                freeTasks.add(task);
+                continue;
             }
-            state.getFreeNodes().add(node);
+
+            visited.addAll(equivalentTasksList.get(task));
+
+            // For child nodes check if they have no more pending dependents, then add to freeTasks queue.
+            boolean childBeenAdded = addPotentialChildNodesToFreeTasks(freeTasks, graph.getNode(task));
+
+            // Deep copy current free tasks for next recursive iteration.
+            LinkedList<Integer> nextFreeTasks = new LinkedList<>(freeTasks);
+
+            // For each processor schedule task on it to recursively generate next partial schedule.
+            boolean isIsomorphic = false;
+            for (int processor = 0; processor < numProcessors; processor++) {
+                int processorFinishTime = currentSchedule.getProcessorFinishTime(processor);
+
+                // Prune #3: processor normalization, avoid scheduling on isomorphic (empty) processor in the future.
+                if (processorFinishTime == 0) {
+                    if (isIsomorphic) continue;
+                    isIsomorphic = true;
+                }
+
+                // Prune #4: ignore duplicate states pruning.
+                if (!previousChildBeenAdded && processor < currentSchedule.getLastProcessor()) continue;
+
+                // Prune #5 (MOST IMPORTANT): ignore if start time + task b level can't beat current fastest time.
+                int startTime = minimumStartTime(graph.getNode(task), currentSchedule, processor, processorFinishTime);
+                if (startTime + bLevels[task] >= fastestTime) continue;
+
+                // Make temporary copies of previous values.
+                boolean tempPreviousIsChildAdded = previousChildBeenAdded;
+                previousChildBeenAdded = childBeenAdded;
+
+                // Schedule task to current schedule.
+                currentSchedule.addTask(graph.getNode(task), startTime, startTime + taskWeight, processor);
+                recurse(nextFreeTasks);
+
+                // Backtrack undoing task added.
+                currentSchedule.popTask();
+                previousChildBeenAdded = tempPreviousIsChildAdded;
+            }
+
+            // Backtrack free tasks queue.
+            List<Node> childNodes = graph.getNode(task).leavingEdges().map(Edge::getNode1).collect(Collectors.toList());
+            for (Node child : childNodes) {
+                dependents[child.getIndex()]++;
+                if (dependents[child.getIndex()] == 1) freeTasks.removeLast();
+            }
+
+            freeTasks.add(task);
         }
     }
 
-    public int[] getbLevels() {
-        return bLevels;
+    /**
+     * Add a tasks child nodes to free tasks queue, if their dependent nodes have been scheduled.
+     * @param freeTasks queue of free tasks ready to be scheduled.
+     * @param node GraphStream Node, the target node and it's children we want to schedule.
+     * @return true/false if a child of the current node was added.
+     */
+    private boolean addPotentialChildNodesToFreeTasks(LinkedList<Integer> freeTasks, Node node) {
+        boolean isChildAdded = false;
+        List<Node> childNodes = node.leavingEdges().map(Edge::getNode1).collect(Collectors.toList());
+        for (Node child : childNodes) {
+            dependents[child.getIndex()]--;
+            if (dependents[child.getIndex()] == 0) {
+                freeTasks.add(child.getIndex());
+                isChildAdded = true;
+            }
+        }
+        return isChildAdded;
     }
 
+    /**
+     * Calculates minimum possible start time, taking into account target processor and communication costs.
+     * @param node GraphStream Node object, the task node we want to schedule.
+     * @param currentSchedule the current partial schedule we have.
+     * @param processor the target processor we are trying to schedule the task onto.
+     * @param currentStartTime the target processor finish time, minimum time calculated can't be less than this.
+     * @return earliest possible start time.
+     */
+    private int minimumStartTime(Node node, Schedule currentSchedule, int processor, int currentStartTime) {
+        List<Edge> parentEdges = node.enteringEdges().collect(Collectors.toList());
 
+        int potentialStartTime = 0;
+        for (Edge parentEdge : parentEdges) {
+            Node parent = parentEdge.getNode0();
+            int parentStartTime = currentSchedule.getTaskStartTime(parent);
+            int parentWeight = parent.getAttribute("Weight", Double.class).intValue();
+            int parentFinishTime = parentStartTime + parentWeight;
+            if (processor != currentSchedule.getTaskProcessor(parent)) {
+                parentFinishTime += parentEdge.getAttribute("Weight", Double.class).intValue();
+            }
+
+            potentialStartTime = Math.max(potentialStartTime, parentFinishTime);
+        }
+
+        return Math.max(potentialStartTime, currentStartTime);
+    }
+
+    public Schedule getBestSchedule() {
+        return bestSchedule;
+    }
+
+    public int getFastestTime() {
+        return fastestTime;
+    }
 }

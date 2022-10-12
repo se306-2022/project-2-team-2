@@ -1,24 +1,46 @@
 import IO.CLIParser;
 import IO.IOParser;
 import IO.InputCommand;
+import algorithms.BranchAndBound;
+import algorithms.BranchAndBoundParallel;
 import algorithms.Greedy;
 import models.ResultTask;
+import models.Schedule;
 import org.graphstream.graph.Graph;
-import visualisation.VisualizationApplication;
 
 public class Main {
     private static InputCommand commands;
-    public static void main(String[] args) {
-       /* commands = CLIParser.commandLineParser(args);;
 
-        Greedy algorithm = new Greedy();
+    public static void main(String[] args) {
+        commands = CLIParser.commandLineParser(args);
+
         Graph graph = IOParser.read(commands.getInputFile());
 
-        ResultTask[] result = algorithm.
-                GreedyScheduler(graph, commands.getNumProcessors());
+        Schedule algorithm = getAlgorithm(commands.isParallel());
 
-        IOParser.write(commands.getOutputFile(), graph, result);*/
+        IOParser.write(commands.getOutputFile(), graph, algorithm);
 
-        VisualizationApplication.main(args);
+    }
+    public static Schedule getAlgorithm(boolean isParallel) {
+
+        Graph graph = IOParser.read(commands.getInputFile());
+
+        if (isParallel) {
+            int numParallelCores = -1;
+            try {
+                numParallelCores = commands.getNumParallelCores();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            if (numParallelCores > 1) {
+                BranchAndBoundParallel algorithmParallel = new BranchAndBoundParallel(graph, numParallelCores);
+                algorithmParallel.run();
+                return algorithmParallel.getBestSchedule();
+            }
+        }
+
+        BranchAndBound algorithmSequential = new BranchAndBound(graph, commands.getNumProcessors());
+        algorithmSequential.run();
+        return algorithmSequential.getBestSchedule();
     }
 }

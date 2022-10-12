@@ -3,9 +3,10 @@ package IO;
 public class InputCommand {
     private String inputFile;
     private String outputFile;
-
     private int numProcessors;
-
+    private boolean isParallel = false;
+    private int numParallelCores;
+    private boolean isVisual = false;
     private boolean customOutputFile = false;
 
     public InputCommand() {
@@ -44,6 +45,31 @@ public class InputCommand {
         this.outputFile = outputFile;
     }
 
+    public boolean isParallel() {
+        return this.isParallel;
+    }
+    public void setParallel(boolean parallel) {
+        isParallel = parallel;
+    }
+
+    public boolean isVisual() {
+        return this.isVisual;
+    }
+    public void setVisual(boolean visual) {
+        isVisual = visual;
+    }
+
+    public void setNumParallelCores(int numParallelCores) {
+        this.numParallelCores = numParallelCores;
+    }
+
+    public int getNumParallelCores() throws IllegalAccessException {
+        if (!this.isParallel) {
+            throw new IllegalAccessException(
+                    "Program is NOT specified to run in parallel");
+        }
+        return this.numParallelCores;
+    }
     public boolean isCustomOutputFile() {
         return this.customOutputFile;
     }
@@ -51,6 +77,5 @@ public class InputCommand {
     public void setCustomOutputFile(boolean isCustom) {
         this.customOutputFile = isCustom;
     }
-
 
 }

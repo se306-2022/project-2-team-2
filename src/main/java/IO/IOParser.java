@@ -1,6 +1,7 @@
 package IO;
 
 import models.ResultTask;
+import models.Schedule;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
@@ -43,14 +44,14 @@ public class IOParser {
      *
      * @param outputFileName the name of the output dot file
      * @param graph          the initial graph returned from reading the dot file
-     * @param resultTasks    the schedule
+     * @param schedule    the schedule
      */
-    public static void write(String outputFileName, Graph graph, ResultTask[] resultTasks) {
+    public static void write(String outputFileName, Graph graph, Schedule schedule) {
 
         FileSink fileSink = new FileSinkDOT(true);
 
         for (int i = 0; i < graph.getNodeCount(); i++) {
-            ResultTask task = resultTasks[i];
+            ResultTask task = schedule.getTasks().get(i);
             Node n = graph.getNode(i);
             n.setAttribute("Weight", task.getFinishTime() - task.getStartTime());
             n.setAttribute("Start", task.getStartTime());
