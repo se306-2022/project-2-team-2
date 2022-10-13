@@ -81,7 +81,6 @@ public class VisualizationController {
         initialisePieChart();
         initCPUChart();
         initRAMChart();
-        createGraph();
     }
 
     /**
@@ -111,6 +110,7 @@ public class VisualizationController {
         timer.startUITimer();
         setPieChart(20, 4);
         setStatusElements("parellel", "graph.dot", "outputgraph.dot", 7, 4);
+        createGraph();
     }
 
     /**

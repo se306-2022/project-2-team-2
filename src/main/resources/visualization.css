@@ -15,14 +15,6 @@
     -fx-background-color: #960000;
 }
 
-.openButton {
-    -fx-background-color: #737373;
-}
-
-.openButton:hover {
-    -fx-background-color: #4f4f4f;
-}
-
 .default-color0.chart-pie {
     -fx-pie-color: #D9D9D9;
 }
