@@ -1,4 +1,4 @@
-# SOFTENG 306 Project 2 Team 2 - Task Scheduler
+# SOFTENG 306 Project 2
 This project is about using artificial intelligence and parallel processing power to solve a difficult scheduling problem.
 
 ## Running the Project
@@ -16,3 +16,21 @@ java -jar scheduler.jar <input_file.dot> <num_processors>
 - Ishaan Bhide (ibhi775@aucklanduni.ac.nz)
 - Matthew Ouyang (wouy448@aucklanduni.ac.nz)
 - Yuewen Zheng (azhe202@aucklanduni.ac.nz)
+
+
+# Development
+This section contains developer instructions to test and the code locally.
+
+## Running JavaFX (IntelliJ)
+If you want to run JavaFX for development purposes using IntelliJ IDE:
+1. Download [JavaFX SDK](https://gluonhq.com/products/javafx/).
+2. IntelliJ > Run > Edit configurations.
+3. Add configuration targeting ```visualisation.VisualizationApplication```
+3. Modify options > Add VM option.
+4. Add the following line:
+```bash
+--module-path "<path/to/javafx_sdk>" --add-modules=javafx.controls,javafx.fxml
+```
+5. Run the configuration to test the JavaFX GUI.
+
+
