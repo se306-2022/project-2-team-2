@@ -12,7 +12,7 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-public class BranchAndBoundParallel {
+public class BranchAndBoundParallel extends Algorithm {
 
     private ForkJoinPool forkJoinPool;
 
