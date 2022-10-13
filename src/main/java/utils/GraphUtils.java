@@ -80,19 +80,6 @@ public class GraphUtils {
     }
 
     /**
-     * Counts up the total task time. Helper method for getting remaining task time at the start.
-     * @param graph GraphStream graph object.
-     * @return total task time within the graph.
-     */
-    public static int getTasksTotalTime(Graph graph) {
-        int tasksTotalTime = 0;
-        for (int i = 0; i < graph.getNodeCount(); i++) {
-            tasksTotalTime += graph.getNode(i).getAttribute("Weight", Double.class).intValue();
-        }
-        return tasksTotalTime;
-    }
-
-    /**
      * Gets initial set of free tasks, given task has in-degree of 0.
      * @param graph GraphStream graph object.
      * @return queue of free tasks.
