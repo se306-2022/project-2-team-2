@@ -9,7 +9,7 @@ import utils.GraphUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BranchAndBound {
+public class BranchAndBound extends Algorithm {
     private final Graph graph;
     private final int numProcessors;
     private Schedule bestSchedule;

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
-public class BranchAndBoundParallel {
+public class BranchAndBoundParallel extends Algorithm {
 
     private ForkJoinPool forkJoinPool;
 
