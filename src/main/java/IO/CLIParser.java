@@ -71,9 +71,9 @@ public class CLIParser {
             inputCommand.setNumParallelCores(numCores);
         }
 
-//        if (commandLineOption.hasOption('v')) {
-//            // TODO: Show visualisation need to wait for it to be completed
-//        }
+        if (commandLineOption.hasOption('v')) {
+            inputCommand.setVisual(true);
+        }
 
         return inputCommand;
     }
