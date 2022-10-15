@@ -1,0 +1,10 @@
+digraph {
+	"a" ["Start"=0,"Weight"=2,"Processor"=1];
+	"b" ["Start"=2,"Weight"=3,"Processor"=1];
+	"c" ["Start"=5,"Weight"=3,"Processor"=1];
+	"d" ["Start"=8,"Weight"=2,"Processor"=1];
+	"a" -> "b" ["Weight"=1.0];
+	"a" -> "c" ["Weight"=2.0];
+	"b" -> "d" ["Weight"=2.0];
+	"c" -> "d" ["Weight"=1.0];
+}
