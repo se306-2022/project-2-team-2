@@ -44,3 +44,7 @@
     -fx-fill: #06B5C0;
     -fx-opacity: 60%;
 }
+
+.bar {
+    -fx-background-color: red;
+}

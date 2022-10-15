@@ -105,7 +105,6 @@ public class VisualizationController {
         statesPieChart.setData(pieChartData);
 
         statesSearchedLabel.setText("0%");
-        createGantt();
     }
 
     /**
@@ -122,17 +121,31 @@ public class VisualizationController {
         setStatusElements("parallel", "graph.dot", "outputgraph.dot", 7, 4);
         createGraph();
 
+
+        // Beginning of solution thread stuff.
         solutionThread.start();
+        updateChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
+        stop = solutionThread.getIsFinished();
 
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             // Update the chart
             Platform.runLater(() -> {
-                if (stop == false) {
+                if (!stop) {
                     updateChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
+                    stop = solutionThread.getIsFinished();
                 }
+
+                if (stop) {
+                    timer.stopUITimer();
+                }
+
+                // TODO: generate output file here.
+                // TODO: change stop button to start / reset hard.
+                // TODO: file names...
+                // TODO: parse input graph.
             });
-        }, 0, 1, TimeUnit.SECONDS);
+        }, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -295,17 +308,12 @@ public class VisualizationController {
     public void createGantt() {
         NumberAxis xAxis = new NumberAxis();
         CategoryAxis yAxis = new CategoryAxis();
-        ArrayList<String> processorCatStr = new ArrayList<>();
-        ArrayList<XYChart.Series> processorCat = new ArrayList<>();
+        xAxis.setAnimated(false); // axis animations are removed
+        yAxis.setAnimated(false); // axis animations are removed
 
-        for (int i = 0; i < 4 ; i++) { // replace '4' with number of cores to be used
-            processorCatStr.add(processorTitle + (i+1));
-            processorCat.add(new XYChart.Series()); // each processor has its own series
-        }
-
-        yAxis.setCategories(FXCollections.observableArrayList(processorCatStr));
         ganttChart = new GanttChart<>(xAxis, yAxis);
         ganttPane.setCenter(ganttChart);
+        ganttChart.setLegendVisible(false);
 
         //live adjust gantt chart based on window size
         ganttChart.heightProperty().addListener((observable, oldValue, newValue) -> ganttChart.setBlockHeight(newValue.doubleValue()*0.70/(4))); // replace '4' with number of cores to be used
@@ -326,47 +334,32 @@ public class VisualizationController {
 
 
     public void updateChart(GanttChart chart, Schedule schedule, int numProcessors) {
-        LinkedList<ResultTask> tasks = schedule.getTasks();
-        int[] startTimes = new int[tasks.size()];
-        int[] processors = new int[tasks.size()];
-
-        for (ResultTask task : tasks) {
-            int i = task.getNode().getIndex();
-            startTimes[i] = task.getStartTime();
-            processors[i] = task.getProcessor();
-        }
-
         // Initialize processor row of tasks
-        XYChart.Series[] rows = new XYChart.Series[processors.length];
-        for (int i = 0; i < processors.length; i++) {
+        XYChart.Series[] rows = new XYChart.Series[numProcessors];
+        for (int i = 0; i < numProcessors; i++) {
             rows[i] = new XYChart.Series();
         }
 
         // iterate through tasks
-        for (ResultTask task : tasks) {
-            // get its id / index
-            int taskId = task.getNode().getIndex();
+        for (ResultTask task : schedule.getTasks()) {
             // get its processor (Y axis row)
-            int taskProcessorId = processors[taskId];
+            int taskProcessorId = task.getProcessor();
 
-            // If the task have not been scheduled yet, it will have a -1 mapping to the processor
-            if (taskProcessorId == -1) {
-                break;
-            }
             // the width in terms of x-axis
             int taskWeight = task.getNode().getAttribute("Weight", Double.class).intValue();
 
             // x-axis intercept
-            int taskStartTime = startTimes[taskId];
+            int taskStartTime = task.getStartTime();
 
             // This will appear as a rectangle in a row from start time until it's start time + weight
             GanttChart.ExtraData taskData = new GanttChart.ExtraData(taskWeight, "bar");
             XYChart.Data data = new XYChart.Data(taskStartTime, "Processor " + taskProcessorId, taskData);
             rows[taskProcessorId].getData().add(data);
         }
+
         // remove previous graph
         chart.getData().clear();
-        for (int i = 0; i < processors.length; i++) {
+        for (int i = 0; i < numProcessors; i++) {
             NumberAxis x = (NumberAxis) chart.getXAxis();
             chart.getData().add(rows[i]);
         }

@@ -21,16 +21,13 @@ public class Main {
 
         Graph graph = IOParser.read(commands.getInputFile());
 
-        Schedule algorithm = getAlgorithm(commands.isParallel());
-
-        IOParser.write(commands.getOutputFile(), graph, algorithm);
-
-        Algorithm solution = getSolution(commands.isParallel(), graph, commands.getNumProcessors());
-
+        // DO NOT create two algorithms one after the other or else there are errors.
         if (commands.isVisual()) {
-            int processors = commands.getNumProcessors();
-            String outputFile = commands.getOutputFile();
-            runVisual(solution, graph, processors, outputFile);
+            Algorithm solution = getSolution(commands.isParallel(), graph, commands.getNumProcessors());
+            runVisual(solution, commands.getNumProcessors());
+        } else {
+            Schedule algorithm = getAlgorithm(commands.isParallel());
+            IOParser.write(commands.getOutputFile(), graph, algorithm);
         }
     }
 
@@ -89,11 +86,11 @@ public class Main {
         return solution;
     }
 
-    private static void runVisual(Algorithm solution, int processors) {
+    private static void runVisual(Algorithm solution, int numProcessors) {
         PlatformImpl.startup(() -> {
 
             VisualizationApplication visualization = new VisualizationApplication();
-            SolutionThread solutionThread = new SolutionThread(solution, processors);
+            SolutionThread solutionThread = new SolutionThread(solution, numProcessors);
 
             try {
                 visualization.start(new Stage());

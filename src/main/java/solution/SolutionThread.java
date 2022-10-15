@@ -7,21 +7,20 @@ import models.Schedule;
 import org.graphstream.graph.Graph;
 
 public class SolutionThread extends Thread {
-    private Graph graph;
-    private int processors;
-    private String outputFile;
-    private Algorithm solution;
+    protected int processors;
+    protected Algorithm solution;
+    protected boolean finished = false;
 
     public SolutionThread(Algorithm solution, int processors) {
         super();
         this.solution = solution;
-        //this.graph = graph;
         this.processors = processors;
-        //this.outputFile = outputFile;
     }
 
+    @Override
     public void run() {
         solution.run();
+        finished = true;
     }
 
     public int getStateCount() {
@@ -39,4 +38,6 @@ public class SolutionThread extends Thread {
     public Schedule getBestSchedule() {
         return solution.getBestSchedule();
     }
+
+    public boolean getIsFinished() {return finished;}
 }
