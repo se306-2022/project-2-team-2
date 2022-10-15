@@ -83,10 +83,21 @@ public class VisualizationController {
         stopButton.setManaged(false);
 
         // initialize graphs
-        createPieChart();
         createCPUChart();
         createRAMChart();
+        createPieChart();
         createGanttChart();
+
+        // ram and cpu charts start running as soon as gui opens
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            // Update the chart
+            Platform.runLater(() -> {
+                index[0] = index[0] + 1;
+                updateRAMChart();
+                updateCPUChart();
+            });
+        }, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -110,9 +121,6 @@ public class VisualizationController {
 
         timer.startUITimer(); // start timer
 
-        // start updating graphs
-        updateCPUChart();
-        updateRAMChart();
         updatePieChart(20, 4);
         setStatusElements("parallel", "graph.dot", "outputgraph.dot", 7, 4);
         createNodeGraph();
@@ -122,16 +130,13 @@ public class VisualizationController {
         updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
         stop = solutionThread.getIsFinished();
 
-        // update charts periodically
+        // update gantt chart periodically
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             // Update the chart
             Platform.runLater(() -> {
                 if (!stop) {
-                    index[0]++;
                     updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
-                    updateRAMChart();
-                    updateCPUChart();
                     stop = solutionThread.getIsFinished();
                 }
 
@@ -145,7 +150,7 @@ public class VisualizationController {
                 // TODO: display correct input graph.
                 // TODO: alternate colors for task and idle blocks.
             });
-        }, 0, 100, TimeUnit.MILLISECONDS);
+        }, 0, 10, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -230,7 +235,8 @@ public class VisualizationController {
      * Updates RAM chart using realtime RAM usage stats
      */
     public void updateRAMChart() {
-        RAMseries.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()/1000000000));
+        RAMseries.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()/1000000));
+        System.out.println(osInfo.getFreeSwapSpaceSize());
         if (RAMseries.getData().size() > WINDOW_SIZE) {
             RAMseries.getData().remove(0);
         }

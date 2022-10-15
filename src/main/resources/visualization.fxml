@@ -117,7 +117,7 @@
                                   <CategoryAxis label="Time (s)" side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis label="Usage (GB)" side="LEFT" />
+                                  <NumberAxis label="Usage (MB)" side="LEFT" />
                                 </yAxis>
                               </AreaChart>
                            </children></VBox>
