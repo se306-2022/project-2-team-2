@@ -16,7 +16,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Graph1.dot");
         greedy = new Greedy(graph, 2);
         greedy.run();
-        assertEquals(9, greedy.getFastestTime());
+        assertEquals(9, greedy.getBestFinishTime());
     }
 
     @Test
@@ -24,7 +24,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_7_OutTree.dot");
         greedy = new Greedy(graph, 2);
         greedy.run();
-        assertEquals(34, greedy.getFastestTime());
+        assertEquals(34, greedy.getBestFinishTime());
     }
 
     @Test
@@ -32,7 +32,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_8_Random.dot");
         greedy = new Greedy(graph, 2);
         greedy.run();
-        assertEquals(677, greedy.getFastestTime());
+        assertEquals(677, greedy.getBestFinishTime());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_9_SeriesParallel.dot");
         greedy = new Greedy(graph, 2);
         greedy.run();
-        assertEquals(55, greedy.getFastestTime());
+        assertEquals(55, greedy.getBestFinishTime());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_10_Random.dot");
         greedy = new Greedy(graph, 2);
         greedy.run();
-        assertEquals(84, greedy.getFastestTime());
+        assertEquals(84, greedy.getBestFinishTime());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_11_OutTree.dot");
         greedy = new Greedy(graph, 2);
         greedy.run();
-        assertEquals(410, greedy.getFastestTime());
+        assertEquals(410, greedy.getBestFinishTime());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_7_OutTree.dot");
         greedy = new Greedy(graph, 4);
         greedy.run();
-        assertEquals(34, greedy.getFastestTime());
+        assertEquals(34, greedy.getBestFinishTime());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_8_Random.dot");
         greedy = new Greedy(graph, 4);
         greedy.run();
-        assertEquals(598, greedy.getFastestTime());
+        assertEquals(598, greedy.getBestFinishTime());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_9_SeriesParallel.dot");
         greedy = new Greedy(graph, 4);
         greedy.run();
-        assertEquals(55, greedy.getFastestTime());
+        assertEquals(55, greedy.getBestFinishTime());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_10_Random.dot");
         greedy = new Greedy(graph, 4);
         greedy.run();
-        assertEquals(84, greedy.getFastestTime());
+        assertEquals(84, greedy.getBestFinishTime());
     }
 
     @Test
@@ -96,6 +96,6 @@ public class TestGreedy {
         graph = IOParser.read(GRAPH_DIR + "Nodes_11_OutTree.dot");
         greedy = new Greedy(graph, 4);
         greedy.run();
-        assertEquals(290, greedy.getFastestTime());
+        assertEquals(290, greedy.getBestFinishTime());
     }
 }

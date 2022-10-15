@@ -13,7 +13,7 @@ public class Greedy extends Algorithm {
     private Graph graph;
     private Comparator<Integer>[] comparators;
     private int processors;
-    private int bestTime = Integer.MAX_VALUE;
+    private int bestFinishTime = Integer.MAX_VALUE;
 
     public Greedy(Graph graph, int processors) {
         this.graph = graph;
@@ -123,9 +123,9 @@ public class Greedy extends Algorithm {
         }
 
         //compare current schedule and replace best with current if the final finish time is shorter
-        if (finishTime < bestTime) {
+        if (finishTime < bestFinishTime) {
             bestSchedule = currentSchedule;
-            bestTime = finishTime;
+            bestFinishTime = finishTime;
         }
 
     }
@@ -134,8 +134,8 @@ public class Greedy extends Algorithm {
         return bestSchedule;
     }
 
-    public int getFastestTime() {
-        return bestTime;
+    public int getBestFinishTime() {
+        return bestFinishTime;
     }
 
     private class BottomLevelComparator implements Comparator<Integer> {
