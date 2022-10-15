@@ -41,7 +41,8 @@ public class Main {
 
         if (numProcessors == 1) {
             Greedy algorithmGreedy = new Greedy(graph, numProcessors);
-            return algorithmGreedy.run();
+            algorithmGreedy.run();
+            return algorithmGreedy.getBestSchedule();
         }
 
         if (isParallel) {
@@ -65,6 +66,12 @@ public class Main {
 
     private static Algorithm getSolution(boolean isParallel, Graph graph, int numProcessors) {
         Algorithm solution;
+
+        if (numProcessors == 1) {
+            Greedy algorithmGreedy = new Greedy(graph, numProcessors);
+            return algorithmGreedy;
+        }
+
         if (isParallel) {
             int numParallelCores = -1;
             try {
