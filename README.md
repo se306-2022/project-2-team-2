@@ -17,10 +17,6 @@ java -jar scheduler.jar <input_file.dot> <num_processors>
 - Matthew Ouyang (wouy448@aucklanduni.ac.nz)
 - Yuewen Zheng (azhe202@aucklanduni.ac.nz)
 
-
-# Development
-This section contains developer instructions to test and the code locally.
-
 ## Running JavaFX (IntelliJ)
 If you want to run JavaFX for development purposes using IntelliJ IDE:
 1. Download [JavaFX SDK](https://gluonhq.com/products/javafx/).
