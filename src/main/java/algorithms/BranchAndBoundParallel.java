@@ -37,6 +37,7 @@ public class BranchAndBoundParallel extends Algorithm {
         this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
 
         Greedy greedy = new Greedy(graph, numProcessors);
+        greedy.run();
         this.fastestTime = greedy.getBestSchedule().getFinishTime();
 
         // Initial recursive action in pool.
