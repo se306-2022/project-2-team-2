@@ -1,28 +1,31 @@
 package visualisation;
 
 import IO.IOParser;
+import com.sun.management.OperatingSystemMXBean;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import models.ResultTask;
+import models.Schedule;
+import org.graphstream.graph.Graph;
+import org.graphstream.ui.fx_viewer.FxViewPanel;
+import org.graphstream.ui.fx_viewer.FxViewer;
+import solution.SolutionThread;
+
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import com.sun.management.OperatingSystemMXBean;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.chart.PieChart;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.util.StringConverter;
-import org.graphstream.graph.Graph;
-import org.graphstream.ui.fx_viewer.FxViewPanel;
-import org.graphstream.ui.fx_viewer.FxViewer;
 
 public class VisualizationController {
     private static UITimer timer;
@@ -68,6 +71,12 @@ public class VisualizationController {
     private InputGraph inputGraph;
     public static final String processorTitle = "PSR ";
     private boolean stop = true;
+    private SolutionThread solutionThread;
+
+    public void setUpArgs(SolutionThread solutionThread) {
+        this.solutionThread = solutionThread;
+    }
+
 
     /**
      *  Initialises components of the JavaFX window for visualisation
@@ -81,6 +90,7 @@ public class VisualizationController {
         initialisePieChart();
         initCPUChart();
         initRAMChart();
+        createGantt();
     }
 
     /**
@@ -109,8 +119,20 @@ public class VisualizationController {
         startButton.setManaged(false);
         timer.startUITimer();
         setPieChart(20, 4);
-        setStatusElements("parellel", "graph.dot", "outputgraph.dot", 7, 4);
+        setStatusElements("parallel", "graph.dot", "outputgraph.dot", 7, 4);
         createGraph();
+
+        solutionThread.start();
+
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            // Update the chart
+            Platform.runLater(() -> {
+                if (stop == false) {
+                    updateChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
+                }
+            });
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -125,7 +147,7 @@ public class VisualizationController {
         timer.stopUITimer();
 
         // Change status label text and colour
-        statusLabel.setStyle("-fx-text-fill: #D70000; -fx-opacity: 60%;");
+        statusLabel.setStyle("-fx-text-fill: #d70000; -fx-opacity: 60%;");
         statusLabel.setText("STOPPED");
     }
 
@@ -302,4 +324,51 @@ public class VisualizationController {
         graphPane.setCenter(viewPanel);
     }
 
+
+    public void updateChart(GanttChart chart, Schedule schedule, int numProcessors) {
+        LinkedList<ResultTask> tasks = schedule.getTasks();
+        int[] startTimes = new int[tasks.size()];
+        int[] processors = new int[tasks.size()];
+
+        for (ResultTask task : tasks) {
+            int i = task.getNode().getIndex();
+            startTimes[i] = task.getStartTime();
+            processors[i] = task.getProcessor();
+        }
+
+        // Initialize processor row of tasks
+        XYChart.Series[] rows = new XYChart.Series[processors.length];
+        for (int i = 0; i < processors.length; i++) {
+            rows[i] = new XYChart.Series();
+        }
+
+        // iterate through tasks
+        for (ResultTask task : tasks) {
+            // get its id / index
+            int taskId = task.getNode().getIndex();
+            // get its processor (Y axis row)
+            int taskProcessorId = processors[taskId];
+
+            // If the task have not been scheduled yet, it will have a -1 mapping to the processor
+            if (taskProcessorId == -1) {
+                break;
+            }
+            // the width in terms of x-axis
+            int taskWeight = task.getNode().getAttribute("Weight", Double.class).intValue();
+
+            // x-axis intercept
+            int taskStartTime = startTimes[taskId];
+
+            // This will appear as a rectangle in a row from start time until it's start time + weight
+            GanttChart.ExtraData taskData = new GanttChart.ExtraData(taskWeight, "bar");
+            XYChart.Data data = new XYChart.Data(taskStartTime, "Processor " + taskProcessorId, taskData);
+            rows[taskProcessorId].getData().add(data);
+        }
+        // remove previous graph
+        chart.getData().clear();
+        for (int i = 0; i < processors.length; i++) {
+            NumberAxis x = (NumberAxis) chart.getXAxis();
+            chart.getData().add(rows[i]);
+        }
+    }
 }

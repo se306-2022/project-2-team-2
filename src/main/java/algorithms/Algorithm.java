@@ -11,10 +11,10 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
 public abstract class Algorithm {
-    private Graph graph;
-    private Schedule bestSchedule;
-    private int stateCount;
-    private int bestFinishTime;
+    protected Graph graph;
+    protected Schedule bestSchedule;
+    protected int stateCount;
+    protected int bestFinishTime;
 
     /**
      * Add a tasks child nodes to free tasks queue, if their dependent nodes have been scheduled.
@@ -76,7 +76,7 @@ public abstract class Algorithm {
         return bestFinishTime;
     }
 
-    protected void updateVisualisation() {
+    public void updateVisualisation() {
 
     }
 

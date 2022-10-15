@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 public class BranchAndBound extends Algorithm {
     private final Graph graph;
     private final int numProcessors;
-    private Schedule bestSchedule;
     private Schedule currentSchedule;
     private int[] bLevels;
     private int[] dependents;
@@ -37,6 +36,7 @@ public class BranchAndBound extends Algorithm {
         this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
         this.fastestTime = new Greedy(graph, numProcessors).run().getFinishTime();
         this.currentSchedule = new Schedule(new LinkedList<>());
+        this.bestSchedule = new Schedule(new LinkedList<>());
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
         recurse(freeTasks);

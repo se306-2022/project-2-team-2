@@ -21,27 +21,9 @@ public class SolutionThread extends Thread {
         this.outputFile = outputFile;
     }
 
+    @Override
     public void run() {
-        Schedule result;
-
-        if (processors == 1) {
-            BranchAndBound branchAndBound = new BranchAndBound(graph, processors);
-            result = branchAndBound.getBestSchedule();
-
-        } else {
-            // find lower bound using Greedy algorithm
-
-            Greedy greedy = new Greedy(graph, processors);
-            result = greedy.run();
-
-            solution.setInitialSchedule(result);
-
-            solution.run();
-            Schedule optimal = solution.getBestSchedule();
-
-        }
-
-//        IOParser();
+        solution.run();
     }
 
     public int getStateCount() {
@@ -55,4 +37,9 @@ public class SolutionThread extends Thread {
     public Schedule getBestSchedule() {
         return solution.getBestSchedule();
     }
+
+    public int getNumProcessors() {
+        return this.processors;
+    }
 }
+

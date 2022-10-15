@@ -77,14 +77,17 @@ public class Main {
 
     private static void runVisual(Algorithm solution, Graph graph, int processors, String outputFile) {
         PlatformImpl.startup(() -> {
+
             VisualizationApplication visualization = new VisualizationApplication();
             SolutionThread solutionThread = new SolutionThread(solution, graph, processors, outputFile);
+
             try {
                 visualization.start(new Stage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//            visualization.main(solutionThread);
+
+            visualization.setUpArgs(solutionThread);
         });
     }
 }
