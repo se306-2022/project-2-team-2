@@ -2,6 +2,12 @@ package IO;
 
 import org.apache.commons.cli.*;
 
+
+/**
+ * This is a parser that takes in the args from the program and returns
+ * a command which is parsed to use for the rest of the application.
+ * Author: Brendan Zhou
+ */
 public class CLIParser {
     private static Options options = new Options();
 
@@ -39,6 +45,12 @@ public class CLIParser {
         footer = "If there are any problems contact project-2-team-2.";
     }
 
+    /**
+     * This method takes the parses argument and uses the args as
+     * an option selector for the program.
+     * @param args
+     * @return InputCommand containing parsed attributes
+     */
     public static InputCommand commandLineParser(String[] args) {
         init();
 
@@ -78,6 +90,12 @@ public class CLIParser {
         return inputCommand;
     }
 
+    /**
+     * This will parse the number of processes to schedule the task with.
+     *
+     * @param args
+     * @return Number of processors
+     */
     private static int parseNumProcessors(String[] args) {
         try {
             return Integer.parseInt(args[1]);
@@ -89,6 +107,12 @@ public class CLIParser {
         return -1;
     }
 
+    /**
+     * Parse the args to obtain a specific option to be used.
+     *
+     * @param args
+     * @return
+     */
     private static CommandLine parseOptions(String[] args) {
         CommandLine commandLineOptions = null;
         try {
@@ -99,10 +123,25 @@ public class CLIParser {
         return commandLineOptions;
     }
 
+    /**
+     * Parses the option and gets the value from the option to be used in the
+     * rest of the program.
+     * @param commandLine
+     * @param option
+     * @return
+     */
     private static String getOptionValueString(CommandLine commandLine, char option) {
         return commandLine.getOptionValue(option);
     }
 
+    /**
+     * Parses the option and gets the value from the option to be used in the
+     * rest of the program.
+     *
+     * @param commandLine
+     * @param option
+     * @return
+     */
     private static int getOptionValueInt(CommandLine commandLine, char option) {
         try {
             String intString = commandLine.getOptionValue(option);
@@ -116,6 +155,12 @@ public class CLIParser {
         return -1;
     }
 
+    /**
+     * Method to display any error messages if the arguments for the application
+     * are incorrect.
+     *
+     * @param messages
+     */
     private static void error(String[] messages) {
         for (String msg : messages) {
             System.err.println(msg);
@@ -124,6 +169,10 @@ public class CLIParser {
         System.exit(1);
     }
 
+    /**
+     * Method to display the format of the arguments and help needed for the
+     * application and program to run successfully.
+     */
     private static void help() {
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.printHelp("scheduler [INPUT-FILE] [NUM_PROCESSORS] ", header, options, footer, true);
