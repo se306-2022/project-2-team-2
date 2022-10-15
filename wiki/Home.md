@@ -9,5 +9,4 @@ Wiki Links:
 - [Branch And Bound Parallel](BranchAndBoundParallel.md)
 - [Command Line Interface](CLI.md)
 - [Greedy Algorithm](GreedyAlgorithm.md)
-- [Input and Output Parsing](IO.md)
 - [Visualisation](Visualisation.md)
