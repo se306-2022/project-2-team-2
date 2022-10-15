@@ -35,7 +35,9 @@ public class BranchAndBoundParallel extends Algorithm {
         // Preprocessing
         this.bLevels = GraphUtils.calculateBLevels(graph);
         this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
-        this.fastestTime = new Greedy(graph, numProcessors).run().getFinishTime();
+
+        Greedy greedy = new Greedy(graph, numProcessors);
+        this.fastestTime = greedy.getBestSchedule().getFinishTime();
 
         // Initial recursive action in pool.
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);

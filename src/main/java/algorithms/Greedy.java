@@ -7,7 +7,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import utils.GraphUtils;
 
-public class Greedy {
+public class Greedy extends Algorithm {
     private Schedule bestSchedule;
     private Schedule currentSchedule;
     private Graph graph;
@@ -24,14 +24,13 @@ public class Greedy {
         comparators = new Comparator[]{new WeightComparator(), new BottomLevelComparator()};
     }
 
-    public Schedule run() {
+    public void run() {
         setComparators();
         for (int i = 0; i < 2; i++) {
             this.currentSchedule = new Schedule(new LinkedList<>());
             GreedyScheduler(comparators[i]);
         }
-
-        return bestSchedule;
+        setDone();
     }
 
     public void GreedyScheduler(Comparator heuristic) {
@@ -86,7 +85,6 @@ public class Greedy {
             finishTime = Math.max(finishTime, currFinishTime); //get the later finish time
 
             //add current node to results map
-            int pos = graph.getNode(current).getIndex();
             currentSchedule.addTask(node, minStart, finishTime, currProcessor);
 
             // get children of current node and iterate through
@@ -130,6 +128,10 @@ public class Greedy {
             bestTime = finishTime;
         }
 
+    }
+
+    public Schedule getBestSchedule() {
+        return bestSchedule;
     }
 
     public int getFastestTime() {

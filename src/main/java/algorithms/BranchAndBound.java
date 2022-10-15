@@ -35,7 +35,10 @@ public class BranchAndBound extends Algorithm {
         this.bLevels = GraphUtils.calculateBLevels(graph);
         this.dependents = GraphUtils.calculateDependents(graph);
         this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
-        this.fastestTime = new Greedy(graph, numProcessors).run().getFinishTime();
+
+        Greedy greedy = new Greedy(graph, numProcessors);
+        this.fastestTime = greedy.getBestSchedule().getFinishTime();
+
         this.currentSchedule = new Schedule(new LinkedList<>());
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
