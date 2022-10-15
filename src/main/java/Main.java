@@ -4,6 +4,7 @@ import IO.InputCommand;
 import algorithms.Algorithm;
 import algorithms.BranchAndBound;
 import algorithms.BranchAndBoundParallel;
+import algorithms.Greedy;
 import com.sun.javafx.application.PlatformImpl;
 import javafx.stage.Stage;
 import models.Schedule;
@@ -35,7 +36,13 @@ public class Main {
 
     public static Schedule getAlgorithm(boolean isParallel) {
 
+        int numProcessors = commands.getNumProcessors();
         Graph graph = IOParser.read(commands.getInputFile());
+
+        if (numProcessors == 1) {
+            Greedy algorithmGreedy = new Greedy(graph, numProcessors);
+            return algorithmGreedy.run();
+        }
 
         if (isParallel) {
             int numParallelCores = -1;
@@ -45,7 +52,7 @@ public class Main {
                 e.printStackTrace();
             }
             if (numParallelCores > 1) {
-                BranchAndBoundParallel algorithmParallel = new BranchAndBoundParallel(graph, numParallelCores);
+                BranchAndBoundParallel algorithmParallel = new BranchAndBoundParallel(graph, numProcessors, numParallelCores);
                 algorithmParallel.run();
                 return algorithmParallel.getBestSchedule();
             }
@@ -66,7 +73,7 @@ public class Main {
                 e.printStackTrace();
             }
             if (numParallelCores > 1) {
-                solution = new BranchAndBoundParallel(graph, numParallelCores);
+                solution = new BranchAndBoundParallel(graph, numProcessors,numParallelCores);
                 return solution;
             }
         }
