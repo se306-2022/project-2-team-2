@@ -142,8 +142,9 @@ public class VisualizationController {
 
                 // TODO: generate output file here.
                 // TODO: change stop button to start / reset hard.
-                // TODO: file names...
-                // TODO: parse input graph.
+                // TODO: display correct file names.
+                // TODO: display correct input graph.
+                // TODO: alternate colors for task and idle blocks.
             });
         }, 0, 100, TimeUnit.MILLISECONDS);
     }

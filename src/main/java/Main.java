@@ -21,7 +21,7 @@ public class Main {
 
         Graph graph = IOParser.read(commands.getInputFile());
 
-        // DO NOT create two algorithms one after the other or else there are errors.
+        // KEEP getSolution & getAlgorithm separate. NEVER run together, dangerous bug somewhere.
         if (commands.isVisual()) {
             Algorithm solution = getSolution(commands.isParallel(), graph, commands.getNumProcessors());
             runVisual(solution, commands.getNumProcessors());
