@@ -16,6 +16,7 @@ Our optimization techninques consisted of two parts: the initial setup, followed
 - The first pruning technique was to check if we have visited and equivalent partial schedule with the same order of tasks. If we have we can safely backtrack and look for anonther schedule. Otherwise, we hashsify the current schedule object and store it in a hashmap. 
 - Another pruning technique was to check if we have already attempted to schedule an similar or equivalent task. This was tracked using a hashset. All equivalent tasks calculated from before would be added to this if a node had any.
 - The third technique was to normalize the processors. We consider two processors to be isomorphic if they are both empty and waiting to recieve a task. Scheduling a task on multiple isomorphic processors would be redundant as they produce similar results. We checked if a processor has a finish time of 0, meaning it hasn't be utilized yet. If a previous processor was also the same (isomorphic) then we will skip. 
+- If the processor index for the current partial schedule is less than the latest processor scheduled and no more free tasks has been added to queue, then we can skip. This is guareentees only unique schedules are explored. This technique assumes that we always schedule tasks on the lowest processor index first.
 - Finally the most effective pruning technique was to check if the current task start time + the bLevel of the task exceeded the fastest finish time. If this was the case then we can skip it entirely. 
 
 
