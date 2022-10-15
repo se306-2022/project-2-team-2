@@ -3,7 +3,6 @@ package solution;
 import IO.IOParser;
 import algorithms.Algorithm;
 import algorithms.BranchAndBound;
-import algorithms.Greedy;
 import models.Schedule;
 import org.graphstream.graph.Graph;
 
@@ -29,13 +28,6 @@ public class SolutionThread extends Thread {
             result = branchAndBound.getBestSchedule();
 
         } else {
-            // find lower bound using Greedy algorithm
-
-            Greedy greedy = new Greedy(graph, processors);
-            result = greedy.run();
-
-            solution.setInitialSchedule(result);
-
             solution.run();
             Schedule optimal = solution.getBestSchedule();
 

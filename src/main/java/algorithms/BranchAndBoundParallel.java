@@ -41,6 +41,8 @@ public class BranchAndBoundParallel extends Algorithm {
         Schedule initialSchedule = new Schedule(new LinkedList<>());
         forkJoinPool = new ForkJoinPool();
         forkJoinPool.invoke(new RecursiveWorker(initialSchedule, freeTasks, dependents, false));
+
+        setDone();
     }
 
     private class RecursiveWorker extends RecursiveAction {
