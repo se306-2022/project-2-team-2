@@ -13,6 +13,7 @@ public class BranchAndBound extends Algorithm {
     private final Graph graph;
     private final int numProcessors;
     private Schedule currentSchedule;
+    private Schedule bestSchedule = new Schedule(new LinkedList<>());
     private int[] bLevels;
     private int[] dependents;
     private List<List<Integer>> equivalentTasksList;
@@ -34,13 +35,18 @@ public class BranchAndBound extends Algorithm {
         this.bLevels = GraphUtils.calculateBLevels(graph);
         this.dependents = GraphUtils.calculateDependents(graph);
         this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
-        this.fastestTime = new Greedy(graph, numProcessors).run().getFinishTime();
+
+        Greedy greedy = new Greedy(graph, numProcessors);
+        greedy.run();
+        this.fastestTime = greedy.getBestSchedule().getFinishTime();
+
         this.currentSchedule = new Schedule(new LinkedList<>());
         this.bestSchedule = new Schedule(new LinkedList<>());
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
         recurse(freeTasks);
 
+        setDone();
         System.out.println("States searched: " + statesSearched);
     }
 

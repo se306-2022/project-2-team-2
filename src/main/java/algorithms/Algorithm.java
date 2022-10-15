@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import models.ResultTask;
 import models.Schedule;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -15,6 +14,11 @@ public abstract class Algorithm {
     protected Schedule bestSchedule;
     protected int stateCount;
     protected int bestFinishTime;
+    protected volatile boolean isDone = false;
+
+    public void setDone() {
+        isDone = true;
+    }
 
     /**
      * Add a tasks child nodes to free tasks queue, if their dependent nodes have been scheduled.
@@ -76,15 +80,8 @@ public abstract class Algorithm {
         return bestFinishTime;
     }
 
-    public void updateVisualisation() {
+    protected void updateVisualisation() {
 
-    }
-
-    public void setInitialSchedule(Schedule schedule) {
-        this.bestFinishTime = schedule.getFinishTime();
-
-        LinkedList<ResultTask> tasks = schedule.getTasks();
-        bestSchedule = new Schedule(tasks);
     }
 
 }

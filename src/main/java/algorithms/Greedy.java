@@ -7,13 +7,13 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import utils.GraphUtils;
 
-public class Greedy {
+public class Greedy extends Algorithm {
     private Schedule bestSchedule;
     private Schedule currentSchedule;
     private Graph graph;
     private Comparator<Integer>[] comparators;
     private int processors;
-    private int bestTime = Integer.MAX_VALUE;
+    private int bestFinishTime = Integer.MAX_VALUE;
 
     public Greedy(Graph graph, int processors) {
         this.graph = graph;
@@ -24,14 +24,13 @@ public class Greedy {
         comparators = new Comparator[]{new WeightComparator(), new BottomLevelComparator()};
     }
 
-    public Schedule run() {
+    public void run() {
         setComparators();
         for (int i = 0; i < 2; i++) {
             this.currentSchedule = new Schedule(new LinkedList<>());
             GreedyScheduler(comparators[i]);
         }
-
-        return bestSchedule;
+        setDone();
     }
 
     public void GreedyScheduler(Comparator heuristic) {
@@ -86,7 +85,6 @@ public class Greedy {
             finishTime = Math.max(finishTime, currFinishTime); //get the later finish time
 
             //add current node to results map
-            int pos = graph.getNode(current).getIndex();
             currentSchedule.addTask(node, minStart, finishTime, currProcessor);
 
             // get children of current node and iterate through
@@ -125,15 +123,19 @@ public class Greedy {
         }
 
         //compare current schedule and replace best with current if the final finish time is shorter
-        if (finishTime < bestTime) {
+        if (finishTime < bestFinishTime) {
             bestSchedule = currentSchedule;
-            bestTime = finishTime;
+            bestFinishTime = finishTime;
         }
 
     }
 
-    public int getFastestTime() {
-        return bestTime;
+    public Schedule getBestSchedule() {
+        return bestSchedule;
+    }
+
+    public int getBestFinishTime() {
+        return bestFinishTime;
     }
 
     private class BottomLevelComparator implements Comparator<Integer> {

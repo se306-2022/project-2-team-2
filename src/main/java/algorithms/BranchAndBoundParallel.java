@@ -23,24 +23,31 @@ public class BranchAndBoundParallel extends Algorithm {
     private int[] bLevels;
     private List<List<Integer>> equivalentTasksList;
     private final HashSet<Integer> visitedSchedules = new HashSet<>();
+    private final int numCores;
 
-    public BranchAndBoundParallel(Graph graph, int numProcessors) {
+    public BranchAndBoundParallel(Graph graph, int numProcessors, int numCores) {
         this.numProcessors = numProcessors;
         this.graph = graph;
+        this.numCores = numCores;
     }
 
     public void run() {
         // Preprocessing
         this.bLevels = GraphUtils.calculateBLevels(graph);
         this.equivalentTasksList = GraphUtils.getEquivalentTasksList(graph);
-        this.fastestTime = new Greedy(graph, numProcessors).run().getFinishTime();
+
+        Greedy greedy = new Greedy(graph, numProcessors);
+        greedy.run();
+        this.fastestTime = greedy.getBestSchedule().getFinishTime();
 
         // Initial recursive action in pool.
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
         int[] dependents = GraphUtils.calculateDependents(graph);
         Schedule initialSchedule = new Schedule(new LinkedList<>());
-        forkJoinPool = new ForkJoinPool();
+        forkJoinPool = new ForkJoinPool(numCores);
         forkJoinPool.invoke(new RecursiveWorker(initialSchedule, freeTasks, dependents, false));
+
+        setDone();
     }
 
     private class RecursiveWorker extends RecursiveAction {

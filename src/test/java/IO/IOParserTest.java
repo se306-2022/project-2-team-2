@@ -42,7 +42,8 @@ public class IOParserTest {
     public void testFileWriteOutputGreedy(){
         Graph graph = IOParser.read("src/test/graphs/Nodes_7_OutTree.dot");
         Greedy greedy = new Greedy(graph, 2);
-        Schedule schedule = greedy.run();
+        greedy.run();
+        Schedule schedule = greedy.getBestSchedule();
         IOParser.write("src/test/graphs/Nodes_7_OutTree_Output.dot", graph, schedule);
     }
 

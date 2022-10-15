@@ -4,6 +4,7 @@ import IO.InputCommand;
 import algorithms.Algorithm;
 import algorithms.BranchAndBound;
 import algorithms.BranchAndBoundParallel;
+import algorithms.Greedy;
 import com.sun.javafx.application.PlatformImpl;
 import javafx.stage.Stage;
 import models.Schedule;
@@ -35,7 +36,14 @@ public class Main {
 
     public static Schedule getAlgorithm(boolean isParallel) {
 
+        int numProcessors = commands.getNumProcessors();
         Graph graph = IOParser.read(commands.getInputFile());
+
+        if (numProcessors == 1) {
+            Greedy algorithmGreedy = new Greedy(graph, numProcessors);
+            algorithmGreedy.run();
+            return algorithmGreedy.getBestSchedule();
+        }
 
         if (isParallel) {
             int numParallelCores = -1;
@@ -45,7 +53,7 @@ public class Main {
                 e.printStackTrace();
             }
             if (numParallelCores > 1) {
-                BranchAndBoundParallel algorithmParallel = new BranchAndBoundParallel(graph, numParallelCores);
+                BranchAndBoundParallel algorithmParallel = new BranchAndBoundParallel(graph, numProcessors, numParallelCores);
                 algorithmParallel.run();
                 return algorithmParallel.getBestSchedule();
             }
@@ -58,6 +66,12 @@ public class Main {
 
     private static Algorithm getSolution(boolean isParallel, Graph graph, int numProcessors) {
         Algorithm solution;
+
+        if (numProcessors == 1) {
+            Greedy algorithmGreedy = new Greedy(graph, numProcessors);
+            return algorithmGreedy;
+        }
+
         if (isParallel) {
             int numParallelCores = -1;
             try {
@@ -66,7 +80,7 @@ public class Main {
                 e.printStackTrace();
             }
             if (numParallelCores > 1) {
-                solution = new BranchAndBoundParallel(graph, numParallelCores);
+                solution = new BranchAndBoundParallel(graph, numProcessors,numParallelCores);
                 return solution;
             }
         }
@@ -75,11 +89,11 @@ public class Main {
         return solution;
     }
 
-    private static void runVisual(Algorithm solution, Graph graph, int processors, String outputFile) {
+    private static void runVisual(Algorithm solution, int processors) {
         PlatformImpl.startup(() -> {
 
             VisualizationApplication visualization = new VisualizationApplication();
-            SolutionThread solutionThread = new SolutionThread(solution, graph, processors, outputFile);
+            SolutionThread solutionThread = new SolutionThread(solution, processors);
 
             try {
                 visualization.start(new Stage());
