@@ -64,6 +64,7 @@ public class VisualizationController {
     private InputGraph inputGraph;
     private boolean stop = true;
     private SolutionThread solutionThread;
+    private String inputFile;
     private XYChart.Series<String, Number> RAMseries;
     private XYChart.Series<String, Number> CPUseries;
     private final int[] index = {-1};
@@ -103,8 +104,9 @@ public class VisualizationController {
     /**
      *  Initialises SolutionThread which manages the algorithm
      */
-    public void setUpArgs(SolutionThread solutionThread) {
+    public void setUpArgs(SolutionThread solutionThread, String inputFile) {
         this.solutionThread = solutionThread;
+        this.inputFile = inputFile;
     }
 
     /**
@@ -122,7 +124,6 @@ public class VisualizationController {
         timer.startUITimer(); // start timer
 
         updatePieChart(20, 4);
-        setStatusElements("parallel", "graph.dot", "outputgraph.dot", 7, 4);
         createNodeGraph();
 
         // start solution thread
@@ -136,12 +137,14 @@ public class VisualizationController {
             // Update the chart
             Platform.runLater(() -> {
                 if (!stop) {
+                    setStatusElements("parallel", this.inputFile.substring(16), "outputgraph.dot", solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
                     updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
                     stop = solutionThread.getIsFinished();
                 }
 
                 if (stop) {
                     timer.stopUITimer();
+                    stopAction();
                 }
 
                 // TODO: generate output file here.

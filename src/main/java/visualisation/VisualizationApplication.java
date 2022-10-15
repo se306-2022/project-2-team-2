@@ -31,8 +31,8 @@ public class VisualizationApplication extends Application {
      * This method sets up required fields in the controller object which is then shown on the GUI.
      * @param solutionThread the thread in which the solution is run. Used to communicate with the GUI.
      */
-    public void setUpArgs(SolutionThread solutionThread) {
-        controller.setUpArgs(solutionThread);
+    public void setUpArgs(SolutionThread solutionThread, String inputFile) {
+        controller.setUpArgs(solutionThread, inputFile);
     }
 
     public static void main(String[] args) {
