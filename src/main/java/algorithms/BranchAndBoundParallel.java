@@ -23,10 +23,12 @@ public class BranchAndBoundParallel extends Algorithm {
     private int[] bLevels;
     private List<List<Integer>> equivalentTasksList;
     private final HashSet<Integer> visitedSchedules = new HashSet<>();
+    private final int numCores;
 
-    public BranchAndBoundParallel(Graph graph, int numProcessors) {
+    public BranchAndBoundParallel(Graph graph, int numProcessors, int numCores) {
         this.numProcessors = numProcessors;
         this.graph = graph;
+        this.numCores = numCores;
     }
 
     public void run() {
@@ -39,7 +41,7 @@ public class BranchAndBoundParallel extends Algorithm {
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
         int[] dependents = GraphUtils.calculateDependents(graph);
         Schedule initialSchedule = new Schedule(new LinkedList<>());
-        forkJoinPool = new ForkJoinPool();
+        forkJoinPool = new ForkJoinPool(numCores);
         forkJoinPool.invoke(new RecursiveWorker(initialSchedule, freeTasks, dependents, false));
 
         setDone();
