@@ -20,7 +20,6 @@ public class BranchAndBound extends Algorithm {
     private final HashSet<Integer> visitedSchedules = new HashSet<>();
     private int fastestTime = Integer.MAX_VALUE;
     private boolean previousChildBeenAdded = false;
-    private int statesSearched = 0;
 
     public BranchAndBound(Graph graph, int numProcessors) {
         this.numProcessors = numProcessors;
