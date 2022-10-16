@@ -123,7 +123,6 @@ public class VisualizationController {
 
         timer.startUITimer(); // start timer
 
-        updatePieChart(20, 4);
         createNodeGraph();
 
         // start solution thread
@@ -139,6 +138,7 @@ public class VisualizationController {
                 if (!stop) {
                     setStatusElements("parallel", this.inputFile.substring(16), "outputgraph.dot", solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
                     updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
+                    updatePieChart((int)Math.round(Math.pow(solutionThread.getNumProcessors(), solutionThread.getBestSchedule().getNumberOfScheduledTasks())), solutionThread.getStateCount());
                     stop = solutionThread.getIsFinished();
                 }
 
@@ -149,9 +149,6 @@ public class VisualizationController {
 
                 // TODO: generate output file here.
                 // TODO: change stop button to start / reset hard.
-                // TODO: display correct file names.
-                // TODO: display correct input graph.
-                // TODO: alternate colors for task and idle blocks.
             });
         }, 0, 10, TimeUnit.MILLISECONDS);
     }
@@ -239,7 +236,6 @@ public class VisualizationController {
      */
     public void updateRAMChart() {
         RAMseries.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()/1000000));
-        System.out.println(osInfo.getFreeSwapSpaceSize());
         if (RAMseries.getData().size() > WINDOW_SIZE) {
             RAMseries.getData().remove(0);
         }
@@ -321,10 +317,12 @@ public class VisualizationController {
         ganttChart.heightProperty().addListener((observable, oldValue, newValue) -> ganttChart.setBlockHeight(newValue.doubleValue()*0.70/(4))); // replace '4' with number of cores to be used
     }
 
+    /**
+     * Creates a node graph using the input graph file and graphstream library
+     */
     public void createNodeGraph() {
         // graph to test with
-        Graph graph = IOParser.read("src/test/graphs/graph1.dot");
-
+        Graph graph = IOParser.read(this.inputFile);
         System.setProperty("org.graphstream.ui", "javafx");
 
         inputGraph = new InputGraph(graph, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
@@ -334,7 +332,9 @@ public class VisualizationController {
         graphPane.setCenter(viewPanel);
     }
 
-
+    /**
+     * Update gantt chant values using updated schedule from solution thread
+     */
     public void updateGanttChart(GanttChart chart, Schedule schedule, int numProcessors) {
         // Initialize processor row of tasks
         XYChart.Series[] rows = new XYChart.Series[numProcessors];

@@ -80,8 +80,4 @@ public abstract class Algorithm {
         return bestFinishTime;
     }
 
-    protected void updateVisualisation() {
-
-    }
-
 }
