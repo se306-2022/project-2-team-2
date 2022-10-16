@@ -1,10 +1,7 @@
 package solution;
 
-import IO.IOParser;
 import algorithms.Algorithm;
-import algorithms.BranchAndBound;
 import models.Schedule;
-import org.graphstream.graph.Graph;
 
 public class SolutionThread extends Thread {
     protected int processors;

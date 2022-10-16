@@ -92,7 +92,7 @@
                                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </padding>
                               </AnchorPane>
-                              <BorderPane fx:id="ganttPane" prefHeight="200.0" prefWidth="200.0" />
+                              <BorderPane fx:id="ganttPane" prefHeight="245.0" prefWidth="200.0" />
                            </children></VBox>
                      </children>
                   </HBox>
@@ -117,7 +117,7 @@
                                   <CategoryAxis label="Time (s)" side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis label="Usage (GB)" side="LEFT" />
+                                  <NumberAxis label="Usage (MB)" side="LEFT" />
                                 </yAxis>
                               </AreaChart>
                            </children></VBox>
