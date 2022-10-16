@@ -336,26 +336,31 @@ public class VisualizationController {
 
 
     public void updateGanttChart(GanttChart chart, Schedule schedule, int numProcessors) {
+
+        // Set block height dependent on number of processors
+        int blockHeight = 150/numProcessors;
+        if(blockHeight > 50) {
+            blockHeight = 50;
+        }
+
+        chart.setBlockHeight(blockHeight);
+
         // Initialize processor row of tasks
         XYChart.Series[] rows = new XYChart.Series[numProcessors];
         for (int i = 0; i < numProcessors; i++) {
             rows[i] = new XYChart.Series();
         }
 
-        // iterate through tasks
         for (ResultTask task : schedule.getTasks()) {
-            // get its processor (Y axis row)
             int taskProcessorId = task.getProcessor();
-
-            // the width in terms of x-axis
             int taskWeight = task.getNode().getAttribute("Weight", Double.class).intValue();
-
-            // x-axis intercept
             int taskStartTime = task.getStartTime();
+            int processorIdDisplay = taskProcessorId+1;
+            int styleCode = taskProcessorId%5;
 
-            // This will appear as a rectangle in a row from start time until it's start time + weight
-            GanttChart.ExtraData taskData = new GanttChart.ExtraData(taskWeight, "bar");
-            XYChart.Data data = new XYChart.Data(taskStartTime, "Processor " + taskProcessorId, taskData);
+            // Create bar in chart
+            GanttChart.ExtraData taskData = new GanttChart.ExtraData(taskWeight, "ganttchart"+styleCode);
+            XYChart.Data data = new XYChart.Data(taskStartTime, "Processor " + processorIdDisplay, taskData);
             rows[taskProcessorId].getData().add(data);
         }
 
