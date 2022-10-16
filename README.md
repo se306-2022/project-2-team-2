@@ -4,10 +4,15 @@ This project is about using artificial intelligence and parallel processing powe
 ## Running the Project
 Push a .dot file to the root directory of the project and run the command below. 
 ```
-java -jar scheduler.jar <input_file.dot> <num_processors>
+java -jar scheduler.jar INPUT.dot P [OPTION]
 ```
-- `<input_file.dot>`: an input dot file containing the graph description.
-- `<processors>`: an integer number of processors the schedule will be performed on.
+- `INPUT.dot`: an input dot file containing the graph description
+- `P`: an integer number of processors the schedule will be performed on
+
+Optional:
+- `-p N`: use N cores for execution in parallel (default is sequential)
+- `-v`: run visualisation
+- `-o OUTPUT`: output file is named OUTPUT (default is INPUT-output.dot)
 
 ## Acknowledgements
 - Amy Rimmer (arim402@aucklanduni.ac.nz)
