@@ -14,7 +14,7 @@ import visualisation.VisualizationApplication;
 
 public class Main {
     private static InputCommand commands;
-    private static String type;
+    private static String type = "";
 
     public static void main(String[] args) {
 
@@ -89,6 +89,7 @@ public class Main {
         }
 
         solution = new BranchAndBound(graph, numProcessors);
+        type = "sequential";
         return solution;
     }
 
