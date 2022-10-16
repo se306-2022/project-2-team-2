@@ -46,7 +46,7 @@ public class BranchAndBound extends Algorithm {
         recurse(freeTasks);
 
         setDone();
-        System.out.println("States searched: " + getStatesSearched());
+        System.out.println("Algorithm Sequential Completed.");
     }
 
     /**
