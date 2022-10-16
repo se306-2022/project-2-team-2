@@ -60,6 +60,7 @@ public class Main {
         }
 
         BranchAndBound algorithmSequential = new BranchAndBound(graph, commands.getNumProcessors());
+        type = "sequential";
         algorithmSequential.run();
         return algorithmSequential.getBestSchedule();
     }
