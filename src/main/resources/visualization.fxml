@@ -153,7 +153,7 @@
                               <PieChart fx:id="statesPieChart" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="132.0" prefWidth="252.0" />
                               <Label id="timerLabel" fx:id="statesSearchedLabel" textFill="#606060">
                                  <font>
-                                    <Font name="System Bold" size="24.0" />
+                                    <Font name="System Bold" size="18.0" />
                                  </font>
                                  <padding>
                                     <Insets bottom="20.0" />

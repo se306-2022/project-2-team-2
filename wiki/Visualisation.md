@@ -5,7 +5,7 @@ be enabled by including the `-v` flag when running the algorithm from the comman
 ## Solution
 The GUI for the interface is displayed as follows:
 
-(include screenshot)
+![img.png](files/UIScreenshot.png)
 
 ## Features
 The header contains a button to start or stop the scheduler algorithm. The main section of the window consists of six panels 
@@ -34,5 +34,3 @@ in order to run the javafx application.
 
 The [VisualisationController](../src/main/java/visualisation/VisualizationController.java) class includes all the logic 
 of the initialising and updating the visualisation window.
-
-(include info about threading and polling)
