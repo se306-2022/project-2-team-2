@@ -151,6 +151,7 @@ public class VisualizationController {
 
                 // TODO: generate output file here.
                 // TODO: change stop button to start / reset hard.
+                // TODO: set status to reflect the type of algorithm it is. current it's just "parallel"
             });
         }, 0, 10, TimeUnit.MILLISECONDS);
     }
