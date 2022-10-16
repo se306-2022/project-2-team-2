@@ -8,7 +8,6 @@ import utils.GraphUtils;
 
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,7 @@ public class BranchAndBoundParallel extends Algorithm {
 
     private final Graph graph;
     private final int numProcessors;
-    private Schedule bestSchedule;
+    private Schedule bestSchedule = new Schedule(new LinkedList<>());
     private int fastestTime = Integer.MAX_VALUE;
     private int[] bLevels;
     private List<List<Integer>> equivalentTasksList;
@@ -66,6 +65,10 @@ public class BranchAndBoundParallel extends Algorithm {
 
         @Override
         protected void compute() {
+            synchronized (RecursiveWorker.class) {
+                setStatesSearched();
+            }
+
             // If no more free tasks, check if complete schedule and if finish time beats the fastest time.
             if (freeTasks.isEmpty()) {
                 synchronized (RecursiveWorker.class) {
