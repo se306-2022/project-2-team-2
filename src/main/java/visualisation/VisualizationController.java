@@ -128,7 +128,7 @@ public class VisualizationController {
             // Update the chart
             Platform.runLater(() -> {
                 if (!stop) {
-                    setStatusElements(solutionThread.getType(), this.inputFile.substring(16), this.outputFile.substring(16), solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
+                    setStatusElements(solutionThread.getType(), this.inputFile, this.outputFile, solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
                     updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
                     updatePieChart((int)Math.round(Math.pow(solutionThread.getNumProcessors(), solutionThread.getBestSchedule().getNumberOfScheduledTasks())), solutionThread.getStateCount());
                     stop = solutionThread.getIsFinished();
