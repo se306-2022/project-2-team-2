@@ -38,6 +38,8 @@ public class VisualizationController {
     @FXML
     private Button stopButton;
     @FXML
+    private Button resetButton;
+    @FXML
     private Label tasksLabel;
     @FXML
     private Label processorLabel;
@@ -83,6 +85,8 @@ public class VisualizationController {
         // initialize start / stop button
         stopButton.setVisible(false);
         stopButton.setManaged(false);
+        resetButton.setVisible(false);
+        resetButton.setManaged(false);
 
         // initialize graphs
         createCPUChart();
@@ -122,6 +126,8 @@ public class VisualizationController {
         stopButton.setManaged(true);
         startButton.setVisible(false);
         startButton.setManaged(false);
+        resetButton.setVisible(false);
+        resetButton.setManaged(false);
 
         timer.startUITimer(); // start timer
 
@@ -162,13 +168,32 @@ public class VisualizationController {
         this.stop = true;
         stopButton.setVisible(false);
         stopButton.setManaged(false);
-        startButton.setVisible(true);
-        startButton.setManaged(true);
+        startButton.setVisible(false);
+        startButton.setManaged(false);
+        resetButton.setVisible(true);
+        resetButton.setManaged(true);
         timer.stopUITimer();
 
         // Change status label text and colour
         statusLabel.setStyle("-fx-text-fill: #d70000; -fx-opacity: 60%;");
         statusLabel.setText("STOPPED");
+    }
+
+    // TODO for some reason UI is not updating
+    public void resetAction() {
+        // reset timer
+        setUITimer(0);
+
+        // remove 'STOPPED' label
+        statusLabel.setText("");
+
+        // make start button visible
+        resetButton.setVisible(false);
+        resetButton.setManaged(false);
+        stopButton.setVisible(false);
+        stopButton.setManaged(false);
+        startButton.setVisible(true);
+        startButton.setManaged(true);
     }
 
     /**

@@ -44,6 +44,14 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
+                  <Button fx:id="resetButton" alignment="CENTER" mnemonicParsing="false" onAction="#resetAction" prefHeight="45.0" prefWidth="120.0" style="-fx-opacity: 70%; -fx-background-radius: 20px; -fx-text-fill: #FFFFFF; -fx-effect: innershadow( gaussian , rgba(0,0,0,0.6) , 20,0,0,0 );" text="RESET" textAlignment="CENTER" styleClass="resetButton">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
                </children>
                <opaqueInsets>
                   <Insets right="20.0" />
