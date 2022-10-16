@@ -12,7 +12,7 @@ import org.graphstream.graph.Node;
 public abstract class Algorithm {
     protected Graph graph;
     protected Schedule bestSchedule;
-    protected int stateCount;
+    protected int statesSearched = 0;
     protected int bestFinishTime;
     protected volatile boolean isDone = false;
 
@@ -72,8 +72,12 @@ public abstract class Algorithm {
         return bestSchedule;
     }
 
-    public int getStateCount() {
-        return stateCount;
+    public int getStatesSearched() {
+        return statesSearched;
+    }
+
+    public void setStatesSearched() {
+        this.statesSearched++;
     }
 
     public int getBestFinishTime() {

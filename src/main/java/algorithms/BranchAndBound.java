@@ -20,7 +20,6 @@ public class BranchAndBound extends Algorithm {
     private final HashSet<Integer> visitedSchedules = new HashSet<>();
     private int fastestTime = Integer.MAX_VALUE;
     private boolean previousChildBeenAdded = false;
-    private int statesSearched = 0;
 
     public BranchAndBound(Graph graph, int numProcessors) {
         this.numProcessors = numProcessors;
@@ -47,7 +46,7 @@ public class BranchAndBound extends Algorithm {
         recurse(freeTasks);
 
         setDone();
-        System.out.println("States searched: " + statesSearched);
+        System.out.println("States searched: " + getStatesSearched());
     }
 
     /**
@@ -55,7 +54,7 @@ public class BranchAndBound extends Algorithm {
      * @param freeTasks takes in the queue of free tasks available on each recursive call.
      */
     public void recurse(LinkedList<Integer> freeTasks) {
-        statesSearched++;
+        setStatesSearched();
 
         // If no more free tasks, check if complete schedule and if finish time beats the fastest time.
         if (freeTasks.isEmpty()) {
@@ -143,5 +142,9 @@ public class BranchAndBound extends Algorithm {
 
     public int getFastestTime() {
         return fastestTime;
+    }
+
+    public int getStatesSearched() {
+        return statesSearched;
     }
 }

@@ -291,15 +291,7 @@ public class VisualizationController {
     private void updatePieChart(int totalStates, int statesSearched) {
         pieChartData.get(0).setPieValue(statesSearched);
         pieChartData.get(1).setPieValue(totalStates-statesSearched);
-
-        String percentageLabel;
-        if(totalStates != 0) {
-            String percentageSearched = String.valueOf(BigDecimal.valueOf(statesSearched * 100).divide(BigDecimal.valueOf(totalStates), 30, RoundingMode.HALF_UP));
-            percentageLabel = percentageSearched.substring(0, 4) + "%";
-        } else {
-            percentageLabel = "0%";
-        }
-        statesSearchedLabel.setText(percentageLabel);
+        statesSearchedLabel.setText(statesSearched + " states searched");
     }
 
     /**

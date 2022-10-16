@@ -21,7 +21,7 @@ public class SolutionThread extends Thread {
     }
 
     public int getStateCount() {
-        return solution.getStateCount();
+        return solution.getStatesSearched();
     }
 
     public int getCurrentBest() {
