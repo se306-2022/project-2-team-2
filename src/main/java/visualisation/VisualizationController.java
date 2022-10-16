@@ -10,25 +10,20 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import models.ResultTask;
 import models.Schedule;
 import org.graphstream.graph.Graph;
 import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import solution.SolutionThread;
-
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class VisualizationController {
-    private static UITimer timer;
 
     @FXML
     private Label timerLabel;
@@ -59,23 +54,21 @@ public class VisualizationController {
     @FXML
     private BorderPane ganttPane;
     @FXML
-    private HBox buttonBox;
-    @FXML
     private  BorderPane graphPane;
+    private static UITimer timer;
     private ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
     private OperatingSystemMXBean osInfo = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
     private ScheduledExecutorService scheduledExecutorService;
     final int WINDOW_SIZE = 10;
     private GanttChart<Number, String> ganttChart;
-
     private InputGraph inputGraph;
-    public static final String processorTitle = "PSR ";
     private boolean stop = true;
     private SolutionThread solutionThread;
-
-    public void setUpArgs(SolutionThread solutionThread) {
-        this.solutionThread = solutionThread;
-    }
+    private String inputFile;
+    private String outputFile;
+    private XYChart.Series<String, Number> RAMseries;
+    private XYChart.Series<String, Number> CPUseries;
+    private final int[] index = {-1};
 
 
     /**
@@ -83,28 +76,39 @@ public class VisualizationController {
      */
     @FXML
     public void initialize() {
+        // create new timer instance
         timer = new UITimer();
         timer.setController(this);
+
+        // initialize start / stop button
         stopButton.setVisible(false);
         stopButton.setManaged(false);
-        initialisePieChart();
-        initCPUChart();
-        initRAMChart();
-        createGantt();
+
+        // initialize graphs
+        createCPUChart();
+        createRAMChart();
+        createPieChart();
+        createGanttChart();
+
+        // ram and cpu charts start running as soon as gui opens
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            // Update the chart
+            Platform.runLater(() -> {
+                index[0] = index[0] + 1;
+                updateRAMChart();
+                updateCPUChart();
+            });
+        }, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     /**
-     *  Initialise pie chart with all not searched states and 0% label
+     *  Initialises SolutionThread which manages the algorithm
      */
-    private void initialisePieChart() {
-        pieChartData.add(new PieChart.Data("Searched", 0));
-        pieChartData.add(new PieChart.Data("Not Searched", 1));
-
-        statesPieChart.setLabelsVisible(false);
-        statesPieChart.setLegendVisible(false);
-        statesPieChart.setData(pieChartData);
-
-        statesSearchedLabel.setText("0%");
+    public void setUpArgs(SolutionThread solutionThread, String inputFile, String outputFile) {
+        this.solutionThread = solutionThread;
+        this.inputFile = inputFile;
+        this.outputFile = outputFile;
     }
 
     /**
@@ -112,32 +116,37 @@ public class VisualizationController {
      */
     public void startAction() {
         this.stop = false;
+
+        // modify start / stop button
         stopButton.setVisible(true);
         stopButton.setManaged(true);
         startButton.setVisible(false);
         startButton.setManaged(false);
-        timer.startUITimer();
-        setPieChart(20, 4);
-        setStatusElements("parallel", "graph.dot", "outputgraph.dot", 7, 4);
-        createGraph();
 
+        timer.startUITimer(); // start timer
 
-        // Beginning of solution thread stuff.
+        updatePieChart(20, 4);
+        createNodeGraph();
+
+        // start solution thread
         solutionThread.start();
-        updateChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
+        updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
         stop = solutionThread.getIsFinished();
 
+        // update gantt chart periodically
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             // Update the chart
             Platform.runLater(() -> {
                 if (!stop) {
-                    updateChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
+                    setStatusElements("parallel", this.inputFile.substring(16), this.outputFile.substring(16), solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
+                    updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
                     stop = solutionThread.getIsFinished();
                 }
 
                 if (stop) {
                     timer.stopUITimer();
+                    stopAction();
                 }
 
                 // TODO: generate output file here.
@@ -146,7 +155,7 @@ public class VisualizationController {
                 // TODO: display correct input graph.
                 // TODO: alternate colors for task and idle blocks.
             });
-        }, 0, 100, TimeUnit.MILLISECONDS);
+        }, 0, 10, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -167,10 +176,6 @@ public class VisualizationController {
 
     /**
      * Set elements in status panel
-     * @param inputFile
-     * @param outputFile
-     * @param taskCount
-     * @param processorCount
      */
     private void setStatusElements(String algoType, String inputFile, String outputFile, int taskCount, int processorCount) {
         algoTypeLabel.setText(algoType.toUpperCase());
@@ -183,27 +188,7 @@ public class VisualizationController {
     }
 
     /**
-     * Sets values of pie chart and updates percentage label
-     * @param totalStates
-     * @param statesSearched
-     */
-    private void setPieChart(int totalStates, int statesSearched) {
-        pieChartData.get(0).setPieValue(statesSearched);
-        pieChartData.get(1).setPieValue(totalStates-statesSearched);
-
-        String percentageLabel;
-        if(totalStates != 0) {
-            String percentageSearched = String.valueOf(BigDecimal.valueOf(statesSearched * 100).divide(BigDecimal.valueOf(totalStates), 30, RoundingMode.HALF_UP));
-            percentageLabel = percentageSearched.substring(0, 4) + "%";
-        } else {
-            percentageLabel = "0%";
-        }
-        statesSearchedLabel.setText(percentageLabel);
-    }
-
-    /**
      * Called by {@link UITimer} startUITimer() to update timer label
-     * @param counter incremented value
      */
     @FXML
     public synchronized void setUITimer(int counter) {
@@ -233,80 +218,98 @@ public class VisualizationController {
     }
 
     /**
-     * Sets up chart displaying realtime RAM usage
+     * Creates a blank RAM chart
      */
-    public void initRAMChart() {
+    public void createRAMChart() {
         // defining the axes and configuring graph info
-        final int[] index = {-1};
+        this.RAMseries = new XYChart.Series<>();
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setAnimated(false); // axis animations are removed
         yAxis.setAnimated(false); // axis animations are removed
         ramChart.setAnimated(false); // disable animations
 
-        //defining a series to display data
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("RAM");
-        // add series to chart
-        ramChart.getData().add(series);
+        RAMseries.setName("RAM");
+        ramChart.getData().add(RAMseries);
         ramChart.setLegendVisible(false);
         ramChart.setCreateSymbols(false);
         ramChart.setStyle(".chart-series-area-line2");
-        // setup a scheduled executor to periodically put data into the chart
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            // Update the chart
-            Platform.runLater(() -> {
-                if (stop == false) {
-                    index[0]++;
-                    series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()/1000000000));
-                    if (series.getData().size() > WINDOW_SIZE)
-                        series.getData().remove(0);
-                    }
-                });
-        }, 0, 1, TimeUnit.SECONDS);
     }
 
     /**
-     * Sets up chart displaying realtime CPU usage
+     * Updates RAM chart using realtime RAM usage stats
      */
-    public void initCPUChart() {
+    public void updateRAMChart() {
+        RAMseries.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getFreeSwapSpaceSize()/1000000));
+        System.out.println(osInfo.getFreeSwapSpaceSize());
+        if (RAMseries.getData().size() > WINDOW_SIZE) {
+            RAMseries.getData().remove(0);
+        }
+    }
+
+    /**
+     * Creates a blank CPU chart
+     */
+    public void createCPUChart() {
         // defining the axes and configuring graph info
-        final int[] index = {-1};
+        this.CPUseries = new XYChart.Series<>();
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setAnimated(false); // axis animations are removed
         yAxis.setAnimated(false); // axis animations are removed
         cpuChart.setAnimated(false); // disable animations
 
-        //defining a series to display data
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("CPU");
-
-        // add series to chart
-        cpuChart.getData().add(series);
+        CPUseries.setName("CPU");
+        cpuChart.getData().add(CPUseries);
         cpuChart.setLegendVisible(false);
         cpuChart.setCreateSymbols(false);
+    }
 
-        // setup a scheduled executor to periodically put data into the chart
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            // Update the chart
-            Platform.runLater(() -> {
-                if (stop == false) {
-                    index[0]++;
-                    series.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getProcessCpuLoad()*100));
-                    if (series.getData().size() > WINDOW_SIZE)
-                        series.getData().remove(0);
-                    }
-                });
-        }, 0, 1, TimeUnit.SECONDS);
+    /**
+     * Sets up default CPU chart
+     */
+    public void updateCPUChart() {
+        CPUseries.getData().add(new XYChart.Data<>(String.valueOf(index[0]), osInfo.getProcessCpuLoad() * 100));
+        if (CPUseries.getData().size() > WINDOW_SIZE) {
+            CPUseries.getData().remove(0);
+        }
+    }
+
+    /**
+     *  Initialise pie chart with all not searched states and 0% label
+     */
+    private void createPieChart() {
+        pieChartData.add(new PieChart.Data("Searched", 0));
+        pieChartData.add(new PieChart.Data("Not Searched", 1));
+
+        statesPieChart.setLabelsVisible(false);
+        statesPieChart.setLegendVisible(false);
+        statesPieChart.setData(pieChartData);
+
+        statesSearchedLabel.setText("0%");
+    }
+
+    /**
+     * Sets values of pie chart and updates percentage label
+     */
+    private void updatePieChart(int totalStates, int statesSearched) {
+        pieChartData.get(0).setPieValue(statesSearched);
+        pieChartData.get(1).setPieValue(totalStates-statesSearched);
+
+        String percentageLabel;
+        if(totalStates != 0) {
+            String percentageSearched = String.valueOf(BigDecimal.valueOf(statesSearched * 100).divide(BigDecimal.valueOf(totalStates), 30, RoundingMode.HALF_UP));
+            percentageLabel = percentageSearched.substring(0, 4) + "%";
+        } else {
+            percentageLabel = "0%";
+        }
+        statesSearchedLabel.setText(percentageLabel);
     }
 
     /**
      * Creates a blank Gantt Chart
      */
-    public void createGantt() {
+    public void createGanttChart() {
         NumberAxis xAxis = new NumberAxis();
         CategoryAxis yAxis = new CategoryAxis();
         xAxis.setAnimated(false); // axis animations are removed
@@ -320,7 +323,7 @@ public class VisualizationController {
         ganttChart.heightProperty().addListener((observable, oldValue, newValue) -> ganttChart.setBlockHeight(newValue.doubleValue()*0.70/(4))); // replace '4' with number of cores to be used
     }
 
-    public void createGraph() {
+    public void createNodeGraph() {
         // graph to test with
         Graph graph = IOParser.read("src/test/graphs/graph1.dot");
 
@@ -334,27 +337,32 @@ public class VisualizationController {
     }
 
 
-    public void updateChart(GanttChart chart, Schedule schedule, int numProcessors) {
+    public void updateGanttChart(GanttChart chart, Schedule schedule, int numProcessors) {
+
+        // Set block height dependent on number of processors
+        int blockHeight = 150/numProcessors;
+        if(blockHeight > 50) {
+            blockHeight = 50;
+        }
+
+        chart.setBlockHeight(blockHeight);
+
         // Initialize processor row of tasks
         XYChart.Series[] rows = new XYChart.Series[numProcessors];
         for (int i = 0; i < numProcessors; i++) {
             rows[i] = new XYChart.Series();
         }
 
-        // iterate through tasks
         for (ResultTask task : schedule.getTasks()) {
-            // get its processor (Y axis row)
             int taskProcessorId = task.getProcessor();
-
-            // the width in terms of x-axis
             int taskWeight = task.getNode().getAttribute("Weight", Double.class).intValue();
-
-            // x-axis intercept
             int taskStartTime = task.getStartTime();
+            int processorIdDisplay = taskProcessorId+1;
+            int styleCode = taskProcessorId%5;
 
-            // This will appear as a rectangle in a row from start time until it's start time + weight
-            GanttChart.ExtraData taskData = new GanttChart.ExtraData(taskWeight, "bar");
-            XYChart.Data data = new XYChart.Data(taskStartTime, "Processor " + taskProcessorId, taskData);
+            // Create bar in chart
+            GanttChart.ExtraData taskData = new GanttChart.ExtraData(taskWeight, "ganttchart"+styleCode);
+            XYChart.Data data = new XYChart.Data(taskStartTime, "Processor " + processorIdDisplay, taskData);
             rows[taskProcessorId].getData().add(data);
         }
 

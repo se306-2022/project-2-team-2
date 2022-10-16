@@ -107,9 +107,6 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
                         ellipse.setHeight(getBlockHeight() * ((getYAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis)getYAxis()).getScale()) : 1));
                         y -= getBlockHeight() / 2.0;
 
-                        // Note: workaround for RT-7689 - saw this in ProgressControlSkin
-                        // The region doesn't update itself when the shape is mutated in place, so we
-                        // null out and then restore the shape in order to force invalidation.
                         region.setShape(null);
                         region.setShape(ellipse);
                         region.setScaleShape(false);
@@ -161,7 +158,6 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         removeSeriesFromDisplay(series);
 
     }
-
 
     private Node createContainer(Series<X, Y> series, int seriesIndex, final Data<X,Y> item, int itemIndex) {
 
