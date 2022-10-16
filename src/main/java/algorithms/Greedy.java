@@ -8,7 +8,7 @@ import org.graphstream.graph.Node;
 import utils.GraphUtils;
 
 public class Greedy extends Algorithm {
-    private Schedule bestSchedule;
+    private Schedule bestSchedule = new Schedule(new LinkedList<>());
     private Schedule currentSchedule;
     private Graph graph;
     private Comparator<Integer>[] comparators;
