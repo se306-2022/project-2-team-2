@@ -34,5 +34,3 @@ in order to run the javafx application.
 
 The [VisualisationController](../src/main/java/visualisation/VisualizationController.java) class includes all the logic 
 of the initialising and updating the visualisation window.
-
-(include info about threading and polling)

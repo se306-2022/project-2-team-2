@@ -291,7 +291,7 @@ public class VisualizationController {
     private void updatePieChart(int totalStates, int statesSearched) {
         pieChartData.get(0).setPieValue(statesSearched);
         pieChartData.get(1).setPieValue(totalStates-statesSearched);
-        statesSearchedLabel.setText(String.valueOf(statesSearched));
+        statesSearchedLabel.setText(statesSearched + " out of " + totalStates);
     }
 
     /**
