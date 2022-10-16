@@ -5,7 +5,7 @@ be enabled by including the `-v` flag when running the algorithm from the comman
 ## Solution
 The GUI for the interface is displayed as follows:
 
-(include screenshot)
+![img.png](files/UIScreenshot.png)
 
 ## Features
 The header contains a button to start or stop the scheduler algorithm. The main section of the window consists of six panels 
