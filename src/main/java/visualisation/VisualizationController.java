@@ -138,7 +138,7 @@ public class VisualizationController {
             // Update the chart
             Platform.runLater(() -> {
                 if (!stop) {
-                    setStatusElements("parallel", this.inputFile.substring(16), this.outputFile.substring(16), solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
+                    setStatusElements(solutionThread.getType(), this.inputFile.substring(16), this.outputFile.substring(16), solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
                     updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
                     updatePieChart((int)Math.round(Math.pow(solutionThread.getNumProcessors(), solutionThread.getBestSchedule().getNumberOfScheduledTasks())), solutionThread.getStateCount());
                     stop = solutionThread.getIsFinished();
@@ -151,7 +151,6 @@ public class VisualizationController {
 
                 // TODO: generate output file here.
                 // TODO: change stop button to start / reset hard.
-                // TODO: set status to reflect the type of algorithm it is. current it's just "parallel"
             });
         }, 0, 10, TimeUnit.MILLISECONDS);
     }

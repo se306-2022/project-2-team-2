@@ -7,16 +7,18 @@ public class SolutionThread extends Thread {
     protected int processors;
     protected Algorithm solution;
     protected boolean finished = false;
+    protected String type;
 
     /**
      *
      * @param solution chosen algorithm which will run this thread
      * @param processors number of processors specified to schedule tasks on
      */
-    public SolutionThread(Algorithm solution, int processors) {
+    public SolutionThread(Algorithm solution, int processors, String type) {
         super();
         this.solution = solution;
         this.processors = processors;
+        this.type = type;
     }
 
     @Override
@@ -42,4 +44,6 @@ public class SolutionThread extends Thread {
     }
 
     public boolean getIsFinished() {return finished;}
+
+    public String getType() {return type;}
 }
