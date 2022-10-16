@@ -17,8 +17,6 @@ import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import solution.SolutionThread;
 import java.lang.management.ManagementFactory;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,8 +33,6 @@ public class VisualizationController {
     private Label outputFileLabel;
     @FXML
     private Button startButton;
-    @FXML
-    private Button stopButton;
     @FXML
     private Label tasksLabel;
     @FXML
@@ -80,10 +76,6 @@ public class VisualizationController {
         timer = new UITimer();
         timer.setController(this);
 
-        // initialize start / stop button
-        stopButton.setVisible(false);
-        stopButton.setManaged(false);
-
         // initialize graphs
         createCPUChart();
         createRAMChart();
@@ -117,9 +109,7 @@ public class VisualizationController {
     public void startAction() {
         this.stop = false;
 
-        // modify start / stop button
-        stopButton.setVisible(true);
-        stopButton.setManaged(true);
+        // modify start button
         startButton.setVisible(false);
         startButton.setManaged(false);
 
@@ -148,9 +138,6 @@ public class VisualizationController {
                     timer.stopUITimer();
                     stopAction();
                 }
-
-                // TODO: generate output file here.
-                // TODO: change stop button to start / reset hard.
             });
         }, 0, 10, TimeUnit.MILLISECONDS);
     }
@@ -160,10 +147,8 @@ public class VisualizationController {
      */
     public void stopAction() {
         this.stop = true;
-        stopButton.setVisible(false);
-        stopButton.setManaged(false);
-        startButton.setVisible(true);
-        startButton.setManaged(true);
+        startButton.setVisible(false);
+        startButton.setManaged(false);
         timer.stopUITimer();
 
         // Change status label text and colour
