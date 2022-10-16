@@ -47,7 +47,7 @@ public class BranchAndBoundParallel extends Algorithm {
         forkJoinPool.invoke(new RecursiveWorker(initialSchedule, freeTasks, dependents, false));
 
         setDone();
-        System.out.println("Algorithm Parallel Completed.");
+        System.out.println("Algorithm Sequential Completed. Optimal time: " + this.fastestTime);
     }
 
     private class RecursiveWorker extends RecursiveAction {
