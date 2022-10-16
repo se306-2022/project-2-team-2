@@ -8,6 +8,11 @@ public class SolutionThread extends Thread {
     protected Algorithm solution;
     protected boolean finished = false;
 
+    /**
+     *
+     * @param solution chosen algorithm which will run this thread
+     * @param processors number of processors specified to schedule tasks on
+     */
     public SolutionThread(Algorithm solution, int processors) {
         super();
         this.solution = solution;

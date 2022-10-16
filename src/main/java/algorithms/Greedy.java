@@ -15,15 +15,26 @@ public class Greedy extends Algorithm {
     private int processors;
     private int bestFinishTime = Integer.MAX_VALUE;
 
+    /**
+     *
+     * @param graph original graph generated from the input
+     * @param processors number of processors tasks can be scheduled on
+     */
     public Greedy(Graph graph, int processors) {
         this.graph = graph;
         this.processors = processors;
     }
 
+    /**
+     * Creates list of heuristics
+     */
     public void setComparators() {
         comparators = new Comparator[]{new WeightComparator(), new BottomLevelComparator()};
     }
 
+    /**
+     * Run the algorithm with all the comparators
+     */
     public void run() {
         setComparators();
         for (int i = 0; i < 2; i++) {
@@ -33,6 +44,10 @@ public class Greedy extends Algorithm {
         setDone();
     }
 
+    /**
+     * Scheduling algorithm
+     * @param heuristic the heuristic used to prioritise nodes in the queue
+     */
     public void GreedyScheduler(Comparator heuristic) {
         int count = graph.getNodeCount();
         int finishTime = 0;
@@ -138,6 +153,9 @@ public class Greedy extends Algorithm {
         return bestFinishTime;
     }
 
+    /**
+     * A comparator which sorts tasks by bottom level value
+     */
     private class BottomLevelComparator implements Comparator<Integer> {
         int[] bottomLevels = GraphUtils.calculateBLevels(graph);
         @Override
@@ -154,6 +172,9 @@ public class Greedy extends Algorithm {
         }
     }
 
+    /**
+     * A comparator which compares tasks by their weight
+     */
     private class WeightComparator implements Comparator<Integer> {
         @Override
         public int compare(Integer o1, Integer o2) {
