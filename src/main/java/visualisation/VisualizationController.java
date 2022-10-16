@@ -65,6 +65,7 @@ public class VisualizationController {
     private boolean stop = true;
     private SolutionThread solutionThread;
     private String inputFile;
+    private String outputFile;
     private XYChart.Series<String, Number> RAMseries;
     private XYChart.Series<String, Number> CPUseries;
     private final int[] index = {-1};
@@ -104,9 +105,10 @@ public class VisualizationController {
     /**
      *  Initialises SolutionThread which manages the algorithm
      */
-    public void setUpArgs(SolutionThread solutionThread, String inputFile) {
+    public void setUpArgs(SolutionThread solutionThread, String inputFile, String outputFile) {
         this.solutionThread = solutionThread;
         this.inputFile = inputFile;
+        this.outputFile = outputFile;
     }
 
     /**
@@ -137,7 +139,7 @@ public class VisualizationController {
             // Update the chart
             Platform.runLater(() -> {
                 if (!stop) {
-                    setStatusElements("parallel", this.inputFile.substring(16), "outputgraph.dot", solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
+                    setStatusElements("parallel", this.inputFile.substring(16), this.outputFile.substring(16), solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
                     updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
                     stop = solutionThread.getIsFinished();
                 }
