@@ -65,6 +65,7 @@ public class VisualizationController {
     private boolean stop = true;
     private SolutionThread solutionThread;
     private String inputFile;
+    private String outputFile;
     private XYChart.Series<String, Number> RAMseries;
     private XYChart.Series<String, Number> CPUseries;
     private final int[] index = {-1};
@@ -104,9 +105,10 @@ public class VisualizationController {
     /**
      *  Initialises SolutionThread which manages the algorithm
      */
-    public void setUpArgs(SolutionThread solutionThread, String inputFile) {
+    public void setUpArgs(SolutionThread solutionThread, String inputFile, String outputFile) {
         this.solutionThread = solutionThread;
         this.inputFile = inputFile;
+        this.outputFile = outputFile;
     }
 
     /**
@@ -136,7 +138,7 @@ public class VisualizationController {
             // Update the chart
             Platform.runLater(() -> {
                 if (!stop) {
-                    setStatusElements("parallel", this.inputFile.substring(16), "outputgraph.dot", solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
+                    setStatusElements("parallel", this.inputFile.substring(16), this.outputFile.substring(16), solutionThread.getBestSchedule().getNumberOfScheduledTasks(), solutionThread.getNumProcessors());
                     updateGanttChart(ganttChart, solutionThread.getBestSchedule(), solutionThread.getNumProcessors());
                     updatePieChart((int)Math.round(Math.pow(solutionThread.getNumProcessors(), solutionThread.getBestSchedule().getNumberOfScheduledTasks())), solutionThread.getStateCount());
                     stop = solutionThread.getIsFinished();
@@ -336,26 +338,31 @@ public class VisualizationController {
      * Update gantt chant values using updated schedule from solution thread
      */
     public void updateGanttChart(GanttChart chart, Schedule schedule, int numProcessors) {
+
+        // Set block height dependent on number of processors
+        int blockHeight = 150/numProcessors;
+        if(blockHeight > 50) {
+            blockHeight = 50;
+        }
+
+        chart.setBlockHeight(blockHeight);
+
         // Initialize processor row of tasks
         XYChart.Series[] rows = new XYChart.Series[numProcessors];
         for (int i = 0; i < numProcessors; i++) {
             rows[i] = new XYChart.Series();
         }
 
-        // iterate through tasks
         for (ResultTask task : schedule.getTasks()) {
-            // get its processor (Y axis row)
             int taskProcessorId = task.getProcessor();
-
-            // the width in terms of x-axis
             int taskWeight = task.getNode().getAttribute("Weight", Double.class).intValue();
-
-            // x-axis intercept
             int taskStartTime = task.getStartTime();
+            int processorIdDisplay = taskProcessorId+1;
+            int styleCode = taskProcessorId%5;
 
-            // This will appear as a rectangle in a row from start time until it's start time + weight
-            GanttChart.ExtraData taskData = new GanttChart.ExtraData(taskWeight, "bar");
-            XYChart.Data data = new XYChart.Data(taskStartTime, "Processor " + taskProcessorId, taskData);
+            // Create bar in chart
+            GanttChart.ExtraData taskData = new GanttChart.ExtraData(taskWeight, "ganttchart"+styleCode);
+            XYChart.Data data = new XYChart.Data(taskStartTime, "Processor " + processorIdDisplay, taskData);
             rows[taskProcessorId].getData().add(data);
         }
 

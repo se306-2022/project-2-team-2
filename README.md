@@ -21,7 +21,7 @@ java -jar scheduler.jar <input_file.dot> <num_processors>
 If you want to run JavaFX for development purposes using IntelliJ IDE:
 1. Download [JavaFX SDK](https://gluonhq.com/products/javafx/).
 2. IntelliJ > Run > Edit configurations.
-3. Add configuration targeting ```visualisation.VisualizationApplication```
+3. Add configuration.
 3. Modify options > Add VM option.
 4. Add the following line:
 ```bash
