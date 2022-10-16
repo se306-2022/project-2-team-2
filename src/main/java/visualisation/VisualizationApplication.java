@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.graphstream.graph.Graph;
 import solution.SolutionThread;
 
 import java.io.IOException;
@@ -31,8 +32,8 @@ public class VisualizationApplication extends Application {
      * This method sets up required fields in the controller object which is then shown on the GUI.
      * @param solutionThread the thread in which the solution is run. Used to communicate with the GUI.
      */
-    public void setUpArgs(SolutionThread solutionThread, String inputFile, String outputFile) {
-        controller.setUpArgs(solutionThread, inputFile, outputFile);
+    public void setUpArgs(SolutionThread solutionThread, String inputFile, String outputFile, Graph graph) {
+        controller.setUpArgs(solutionThread, inputFile, outputFile, graph);
     }
 
     public static void main(String[] args) {

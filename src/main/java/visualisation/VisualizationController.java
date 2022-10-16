@@ -65,6 +65,7 @@ public class VisualizationController {
     private XYChart.Series<String, Number> RAMseries;
     private XYChart.Series<String, Number> CPUseries;
     private final int[] index = {-1};
+    private Graph graph;
 
 
     /**
@@ -97,10 +98,11 @@ public class VisualizationController {
     /**
      *  Initialises SolutionThread which manages the algorithm
      */
-    public void setUpArgs(SolutionThread solutionThread, String inputFile, String outputFile) {
+    public void setUpArgs(SolutionThread solutionThread, String inputFile, String outputFile, Graph graph) {
         this.solutionThread = solutionThread;
         this.inputFile = inputFile;
         this.outputFile = outputFile;
+        this.graph = graph;
     }
 
     /**
@@ -136,6 +138,7 @@ public class VisualizationController {
 
                 if (stop) {
                     timer.stopUITimer();
+                    IOParser.write(outputFile, graph, solutionThread.getBestSchedule());
                     stopAction();
                 }
             });

@@ -25,7 +25,7 @@ public class Main {
         // KEEP getSolution & getAlgorithm separate. NEVER run together, dangerous bug somewhere.
         if (commands.isVisual()) {
             Algorithm solution = getSolution(commands.isParallel(), graph, commands.getNumProcessors());
-            runVisual(solution, commands.getNumProcessors(), commands.getInputFile(), commands.getOutputFile(), type);
+            runVisual(solution, commands.getNumProcessors(), commands.getInputFile(), commands.getOutputFile(), type, graph);
         } else {
             Schedule algorithm = getAlgorithm(commands.isParallel());
             IOParser.write(commands.getOutputFile(), graph, algorithm);
@@ -93,7 +93,7 @@ public class Main {
         return solution;
     }
 
-    private static void runVisual(Algorithm solution, int numProcessors, String inputFile, String outputFile, String type) {
+    private static void runVisual(Algorithm solution, int numProcessors, String inputFile, String outputFile, String type, Graph graph) {
         PlatformImpl.startup(() -> {
 
             VisualizationApplication visualization = new VisualizationApplication();
@@ -105,7 +105,7 @@ public class Main {
                 e.printStackTrace();
             }
 
-            visualization.setUpArgs(solutionThread, inputFile, outputFile);
+            visualization.setUpArgs(solutionThread, inputFile, outputFile, graph);
         });
     }
 }
