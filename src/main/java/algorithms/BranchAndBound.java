@@ -40,7 +40,7 @@ public class BranchAndBound extends Algorithm {
         this.fastestTime = greedy.getBestSchedule().getFinishTime();
 
         this.currentSchedule = new Schedule(new LinkedList<>());
-        this.bestSchedule = new Schedule(new LinkedList<>());
+        this.bestSchedule = greedy.getBestSchedule();
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
 
         recurse(freeTasks);
