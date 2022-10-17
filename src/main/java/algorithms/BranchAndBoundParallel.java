@@ -38,6 +38,7 @@ public class BranchAndBoundParallel extends Algorithm {
         Greedy greedy = new Greedy(graph, numProcessors);
         greedy.run();
         this.fastestTime = greedy.getBestSchedule().getFinishTime();
+        this.bestSchedule = greedy.getBestSchedule();
 
         // Initial recursive action in pool.
         LinkedList<Integer> freeTasks = GraphUtils.getInitialFreeTasks(graph);
@@ -47,7 +48,7 @@ public class BranchAndBoundParallel extends Algorithm {
         forkJoinPool.invoke(new RecursiveWorker(initialSchedule, freeTasks, dependents, false));
 
         setDone();
-        System.out.println("Algorithm Sequential Completed. Optimal time: " + this.fastestTime);
+        System.out.println("Algorithm Parallel Completed. Optimal time: " + this.fastestTime);
     }
 
     private class RecursiveWorker extends RecursiveAction {
