@@ -5,6 +5,7 @@ import org.graphstream.graph.Graph;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestBranchAndBoundParallel {
     private Graph graph;
@@ -17,6 +18,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 2, 2);
         branchAndBound.run();
         assertEquals(8, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -25,6 +27,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 2, 3);
         branchAndBound.run();
         assertEquals(28, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -33,6 +36,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 2, 1);
         branchAndBound.run();
         assertEquals(581, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -41,6 +45,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 2, 4);
         branchAndBound.run();
         assertEquals(55, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -49,6 +54,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 2, 1);
         branchAndBound.run();
         assertEquals(50, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -57,6 +63,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 2, 2);
         branchAndBound.run();
         assertEquals(350, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -65,6 +72,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 4, 3);
         branchAndBound.run();
         assertEquals(22, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -73,6 +81,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 4, 4);
         branchAndBound.run();
         assertEquals(581, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -81,6 +90,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 4, 2);
         branchAndBound.run();
         assertEquals(55, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -89,6 +99,7 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 4, 3);
         branchAndBound.run();
         assertEquals(50, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 
     @Test
@@ -97,5 +108,6 @@ public class TestBranchAndBoundParallel {
         branchAndBound = new BranchAndBoundParallel(graph, 4, 2);
         branchAndBound.run();
         assertEquals(227, branchAndBound.getFastestTime());
+        assertTrue(branchAndBound.getBestSchedule().isValid());
     }
 }

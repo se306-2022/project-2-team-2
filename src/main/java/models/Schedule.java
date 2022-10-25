@@ -1,9 +1,11 @@
 package models;
 
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 
 import javax.xml.transform.Result;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * State represents partial solution.
@@ -72,6 +74,30 @@ public class Schedule {
         }
 
         return 0;
+    }
+
+    /**
+     * Method checks if the schedule is valid. It does this by checking if any task starting time,
+     * is less than it's parents finish time (+communication cost if different processor).
+     * @return true / false.
+     */
+    public boolean isValid() {
+        for (ResultTask task : tasks) {
+            List<Edge> parentEdges = task.getNode().enteringEdges().collect(Collectors.toList());
+            for (Edge parentEdge : parentEdges) {
+                Node parent = parentEdge.getNode0();
+                int communicationCost = parentEdge.getAttribute("Weight", Double.class).intValue();
+
+                for (ResultTask parentTask : tasks) {
+                    if (parentTask.getNode().getIndex() == parent.getIndex()) {
+                        if (parentTask.getProcessor() == task.getProcessor() && task.getStartTime() < parentTask.getFinishTime()) return false;
+                        if (parentTask.getProcessor() != task.getProcessor() && task.getStartTime() < parentTask.getFinishTime() + communicationCost) return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     @Override
