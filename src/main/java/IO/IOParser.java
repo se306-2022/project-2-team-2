@@ -50,9 +50,8 @@ public class IOParser {
 
         FileSink fileSink = new FileSinkDOT(true);
 
-        for (int i = 0; i < graph.getNodeCount(); i++) {
-            ResultTask task = schedule.getTasks().get(i);
-            Node n = graph.getNode(i);
+        for (ResultTask task : schedule.getTasks()) {
+            Node n = graph.getNode(task.getNode().getIndex());
             n.setAttribute("Weight", task.getFinishTime() - task.getStartTime());
             n.setAttribute("Start", task.getStartTime());
             n.setAttribute("Processor", task.getProcessor() + 1);
